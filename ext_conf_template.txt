@@ -1,0 +1,14 @@
+# cat=basic/enable; type=boolean; label=Backend: Enable Shibboleth authentication for the backend.
+enableBE = 0
+
+# cat=basic/enable; type=boolean; label=Frontend: Enable Shibboleth authentication for the frontend.
+enableFE = 0
+
+# cat=basic/enable; type=text; label=Shibboleth Login Handler
+loginHandler = /Shibhandler/Login
+
+# cat=basic/enable; type=text; label=Shibboleth Logout Handler
+logoutHandler = /Shibhandler/Logout
+
+# cat=basic/enable; type=text; label=Shibboleth UserID ServerVar
+remoteUser = REMOTE_USER
