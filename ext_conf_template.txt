@@ -5,7 +5,7 @@ enableBE = 0
 enableFE = 0
 
 # cat=basic/enable; type=int+; label=Storage folder Pid for Frontend Users
-pidFE = 0
+storagePid = 0
 
 # cat=basic/enable; type=text; label=Shibboleth Login Handler
 loginHandler = /Shibhandler/Login

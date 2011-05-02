@@ -36,7 +36,8 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	public $extKey = 'shibboleth_auth';	// The extension key.
 	public $pObj;
 	
-	private $conf;
+	protected $conf;
+	
 	private $remoteUser;
 	
 	/**
@@ -67,10 +68,11 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			if (TYPO3_MODE == 'FE') {
 				if(stristr($target, '?') === FALSE) $target .= '?';
 				else $target .= '&';
-				$target .= 'logintype=login&pid='.$this->conf['pidFE'];
+				$target .= 'logintype=login&pid='.$this->conf['storagePid'];
 			}
-			header('Location: ' . $this->conf['loginHandler'] . '?target=' . urlencode($target));
-			exit;
+			$redirectUrl = $this->conf['loginHandler'] . '?target=' . urlencode($target);
+			$redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
+			t3lib_utility_Http::redirect($redirectUrl);
 		} else if ($_SERVER['AUTH_TYPE'] == 'shibboleth') {
 			$loginData['uname'] = $this->remoteUser;
 			//$loginData['uident'] = $_SERVER['Shib_Session_ID'];

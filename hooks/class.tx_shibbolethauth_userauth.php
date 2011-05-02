@@ -24,17 +24,17 @@
 
 
 /**
- * Service "Shibboleth-Authentication" for the "shibboleth" extension.
+ * Service "Shibboleth-Authentication" for the "shibboleth_auth" extension.
  *
  * @author	Tamer Erdoğan <tamer.erdogan@univie.ac.at>
  * @package	TYPO3
- * @subpackage	tx_shibboleth
+ * @subpackage	tx_shibbolethauth
  */
 class tx_shibbolethauth_userauth {
 	
 	public function logoutBE() {
-		$conf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['shibboleth_auth']);
-		$_GET['redirect'] = $conf['logoutHandler'];
+		$_EXTCONF = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['shibboleth_auth']);
+		$_GET['redirect'] = $_EXTCONF['logoutHandler'];
 	}
 }
 

@@ -3,7 +3,7 @@
 /***************************************************************
  * Extension Manager/Repository config file for ext "shibboleth_auth".
  *
- * Auto generated 10-04-2017 21:29
+ * Auto generated 10-04-2017 21:30
  *
  * Manual updates:
  * Only the data in the array - everything else is removed by next
@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = array (
 	'description' => 'Shibboleth Single Sign On Authentication',
 	'category' => 'services',
 	'shy' => 0,
-	'version' => '1.0.2',
+	'version' => '1.1.0',
 	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',

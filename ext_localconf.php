@@ -23,6 +23,8 @@ if ($config['enableFE']) {
 	$subTypes[] = 'getUserFE';
 	$subTypes[] = 'authUserFE';
 	
+	t3lib_extMgm::addPItoST43($_EXTKEY, 'pi1/class.tx_shibbolethauth_pi1.php', '_pi1', 'list_type', 0);
+	
 	// If this is set Auth Services will come into play everytime a page is requested without a valid user session. If you want to implement a single sign on scenario you will need to set this.
 	//$GLOBALS['TYPO3_CONF_VARS']['SVCONF']['auth']['setup']['FE_fetchUserIfNoSession']=1;
 }

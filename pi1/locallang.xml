@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for plugin &quot;tx_univieshibboleth_pi1&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="welcome_header">User login</label>
+			<label index="welcome_message">Enter your username and password here in order to log in on the website:</label>
+			<label index="logout_header">You have logged out.</label>
+			<label index="logout_message">You just logged out from your user session on this website. You can login again or as another user by the form below.</label>
+			<label index="error_header">Login failure</label>
+			<label index="success_header">Login successful</label>
+			<label index="success_message">You are now logged in as '###USER###'</label>
+			<label index="status_header">Current status</label>
+			<label index="status_message">This is your current status:</label>
+			<label index="cookie_warning">Warning: There is a possibility that cookies are not enabled in your web browser! If your login disappears on your next click that is the case and you should enable cookies (or accept cookies from this website) immediately!</label>
+			<label index="username">Username:</label>
+			<label index="password">Password:</label>
+			<label index="login">Login</label>
+			<label index="logout">Logout</label>
+			<label index="shibboleth_logout">Wenn sie ihre gesamte Weblogin-Sitzung beenden wollen, wählen sie bitte:</label>
+		</languageKey>
+	</data>
+</T3locallang>
