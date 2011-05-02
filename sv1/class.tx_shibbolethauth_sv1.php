@@ -63,18 +63,23 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	 */
 	function initAuth($mode, $loginData, $authInfo, $pObj) {
 		if (empty($this->remoteUser)) {
-			header('Location: ' . $this->conf['loginHandler'] . '?target=' . urlencode(t3lib_div::getIndpEnv('TYPO3_REQUEST_URL')));
+			$target = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
+			if (TYPO3_MODE == 'FE') {
+				if(stristr($target, '?') === FALSE) $target .= '?';
+				else $target .= '&';
+				$target .= 'logintype=login&pid='.$this->conf['pidFE'];
+			}
+			header('Location: ' . $this->conf['loginHandler'] . '?target=' . urlencode($target));
 			exit;
 		} else if ($_SERVER['AUTH_TYPE'] == 'shibboleth') {
-			// todo: loginData from Server Vars
 			$loginData['uname'] = $this->remoteUser;
-			$loginData['uident'] = $_SERVER['Shib_Session_ID'];
+			//$loginData['uident'] = $_SERVER['Shib_Session_ID'];
 			$loginData['status'] = 'login';
 			parent::initAuth($mode, $loginData, $authInfo, $pObj);
 		}
 	}
 	
-	function getUser()	{
+	function getUser() {
 		$user = false;
 		
 		if ($this->login['status']=='login' && $this->login['uname'])	{
