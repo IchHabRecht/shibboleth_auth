@@ -86,20 +86,63 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 		
 		if ($this->login['status']=='login' && $this->login['uname'])	{
 			$user = $this->fetchUserRecord($this->login['uname']);
-			// @todo:
-			// if (TYPO3_MODE == 'BE') do not import users
-			// if (TYPO3_MODE == 'FE') import users.
-			if(!is_array($user)) {
-				// Failed login attempt (no username found)
-				$this->writelog(255,3,3,2,
-					"Login-attempt from %s (%s), username '%s' not found!!",
-					Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']));	// Logout written to log
-				t3lib_div::sysLog(sprintf( "Login-attempt from %s (%s), username '%s' not found!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname'] ), 'Core', 0);
+			
+			if(!is_array($user) || empty($user)) {
+				if (!empty($this->remoteUser)) {
+					$this->importUser();
+				} else {
+					// Failed login attempt (no username found)
+					$this->writelog(255,3,3,2,
+						"Login-attempt from %s (%s), username '%s' not found!!",
+						Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']));
+					t3lib_div::sysLog(sprintf( "Login-attempt from %s (%s), username '%s' not found!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname'] ), 'Core', 0);
+				}
 			} else {
-				if ($this->writeDevLog) 	t3lib_div::devLog('User found: '.t3lib_div::arrayToLogString($user, array($this->db_user['userid_column'],$this->db_user['username_column'])), 'tx_sv_auth');
+				$this->updateUser($user);
+				if ($this->writeDevLog) t3lib_div::devLog('User found: '.t3lib_div::arrayToLogString($user, array($this->db_user['userid_column'],$this->db_user['username_column'])), 'tx_sv_auth');
 			}
+			// the user was updated, it should be fetched again.
+			$user = $this->fetchUserRecord($this->login['uname']);
 		}
 		return $user;
+	}
+	
+	/**
+	 * @return	boolean
+	 */
+	protected function importUser() {
+		if ($this->authInfo['loginType'] == 'FE' && $this->conf['enableAutoImport']) {
+			$this->writelog(255,3,3,2,
+				"Importing user %s (%s), username '%s' not found!!",
+				Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']));
+			
+			if (!empty($_SERVER['affiliation'])) {
+				$usergroup = explode(';', $_SERVER['affiliation']);
+				array_walk($usergroup, create_function('&$v,$k', '$v = preg_replace("/@.*/", "", $v);'));
+				// todo: insert the groups if they are not there.
+				
+				// fetch the group ids
+			}
+			
+			$user = array('crdate' => time(),
+				'tstamp' => time(),
+				'pid' => $this->conf['storagePid'],
+				'username' => $this->remoteUser,
+				'password' => t3lib_div::shortMD5(uniqid(rand(), true)),
+				'email' => $_SERVER['mail'],
+				'name' => $_SERVER['displayName'],
+				);
+			$GLOBALS['TYPO3_DB']->exec_INSERTquery($this->authInfo['db_user']['table'], $user);
+		}
+	}
+	
+	/**
+	 * @return	boolean
+	 */
+	protected function updateUser($user) {
+		if ($this->authInfo['loginType'] == 'FE' && $this->conf['enableAutoImport']) {
+			// todo:
+		}
 	}
 	
 	/**

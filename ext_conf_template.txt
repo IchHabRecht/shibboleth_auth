@@ -4,14 +4,17 @@ enableBE = 0
 # cat=basic/enable; type=boolean; label=Frontend: Enable Shibboleth authentication for the frontend.
 enableFE = 0
 
-# cat=basic/enable; type=int+; label=Storage folder Pid for Frontend Users
+# cat=basic/enable; type=boolean; label=Auto Import: Enable Auto Import of Frontend Users
+enableAutoImport = 0
+
+# cat=basic; type=int+; label=Storage Pid: Storage Folder for Frontend Users
 storagePid = 0
 
-# cat=basic/enable; type=text; label=Shibboleth Login Handler
+# cat=basic; type=string; label=Shibboleth Login Handler
 loginHandler = /Shibhandler/Login
 
-# cat=basic/enable; type=text; label=Shibboleth Logout Handler
+# cat=basic; type=string; label=Shibboleth Logout Handler
 logoutHandler = /Shibhandler/Logout
 
-# cat=basic/enable; type=text; label=Shibboleth UserID ServerVar
+# cat=basic; type=string; label=Shibboleth UserID ServerVar
 remoteUser = REMOTE_USER

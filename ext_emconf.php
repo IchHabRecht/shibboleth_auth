@@ -12,10 +12,10 @@
 
 $EM_CONF[$_EXTKEY] = array (
 	'title' => 'Shibboleth Authentication',
-	'description' => 'Shibboleth Single Sign On Authentication',
+	'description' => 'Shibboleth Single Sign On Authentication (BE & FE). The FE Users will be imported automatically into the configured storage pid.',
 	'category' => 'services',
 	'shy' => 0,
-	'version' => '1.1.0',
+	'version' => '1.2.0',
 	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',
