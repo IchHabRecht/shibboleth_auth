@@ -20,7 +20,26 @@
 			<label index="password">Password:</label>
 			<label index="login">Login</label>
 			<label index="logout">Logout</label>
-			<label index="shibboleth_logout">Wenn sie ihre gesamte Weblogin-Sitzung beenden wollen, wählen sie bitte:</label>
+			<label index="shibboleth_logout">If you want to close your Weblogin-Session, please click the following:</label>
 		</languageKey>
+        <languageKey index="de" type="array">
+            <label index="welcome_header">Benutzeranmeldung</label>
+            <label index="welcome_message">Bitte geben Sie Benutzernamen und Passwort ein, um sich einzuloggen.</label>
+            <label index="logout_header">Sie haben sich abgemeldet</label>
+            <label index="logout_message">Sie haben sich gerade von der Benutzersession abgemeldet.</label>
+            <label index="error_header">Login Fehler</label>
+            <label index="error_message">Ein Fehler trat während des Login-Prozesses auf. Möglicherweise haben Sie Benutzername oder Passwort falsch eingegeben, oder Ihr Browser unterstätzt keine Cookies. Bitte achten Sie auf Groß- und Kleinschreibung!</label>
+            <label index="success_header">Login erfolgreich</label>
+            <label index="success_message">Sie sind nun eingeloggt als '###USER###'.</label>
+            <label index="status_header">Verbindungsstatus</label>
+            <label index="status_message">Hier sehen Sie ihren momentanen Verbindungsstatus.</label>
+			<label index="status_message">This is your current status:</label>
+			<label index="cookie_warning">Warning: There is a possibility that cookies are not enabled in your web browser! If your login disappears on your next click that is the case and you should enable cookies (or accept cookies from this website) immediately!</label>
+			<label index="username">Benutzername:</label>
+            <label index="password">Passwort:</label>
+            <label index="login">Login</label>
+            <label index="logout">Logout</label>
+			<label index="shibboleth_logout">Wenn sie ihre gesamte Weblogin-Sitzung beenden wollen, wählen sie bitte:</label>
+        </languageKey>
 	</data>
 </T3locallang>

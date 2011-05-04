@@ -18,3 +18,13 @@ logoutHandler = /Shibhandler/Logout
 
 # cat=basic; type=string; label=Shibboleth UserID ServerVar
 remoteUser = REMOTE_USER
+
+# cat=basic; type=string; label=Shibboleth user email ServerVar
+mail = mail
+
+# cat=basic; type=string; label=Shibboleth displayName ServerVar
+displayName = displayName
+
+# cat=basic; type=string; label=Shibboleth eduPersonAffiliation ServerVar
+eduPersonAffiliation = affiliation
+

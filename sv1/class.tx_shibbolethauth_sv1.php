@@ -88,8 +88,8 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			$user = $this->fetchUserRecord($this->login['uname']);
 			
 			if(!is_array($user) || empty($user)) {
-				if (!empty($this->remoteUser)) {
-					$this->importUser();
+				if ($this->authInfo['loginType'] == 'FE' && !empty($this->remoteUser) && $this->conf['enableAutoImport']) {
+					$this->importFEUser();
 				} else {
 					// Failed login attempt (no username found)
 					$this->writelog(255,3,3,2,
@@ -98,11 +98,15 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 					t3lib_div::sysLog(sprintf( "Login-attempt from %s (%s), username '%s' not found!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname'] ), 'Core', 0);
 				}
 			} else {
-				$this->updateUser($user);
+				if ($this->authInfo['loginType'] == 'FE' && $this->conf['enableAutoImport']) {
+					$this->updateFEUser();
+				}
 				if ($this->writeDevLog) t3lib_div::devLog('User found: '.t3lib_div::arrayToLogString($user, array($this->db_user['userid_column'],$this->db_user['username_column'])), 'tx_sv_auth');
 			}
-			// the user was updated, it should be fetched again.
-			$user = $this->fetchUserRecord($this->login['uname']);
+			if ($this->authInfo['loginType'] == 'FE') {
+				// the fe_user was updated, it should be fetched again.
+				$user = $this->fetchUserRecord($this->login['uname']);
+			}
 		}
 		return $user;
 	}
@@ -110,39 +114,64 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	/**
 	 * @return	boolean
 	 */
-	protected function importUser() {
-		if ($this->authInfo['loginType'] == 'FE' && $this->conf['enableAutoImport']) {
-			$this->writelog(255,3,3,2,
-				"Importing user %s (%s), username '%s' not found!!",
-				Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']));
-			
-			if (!empty($_SERVER['affiliation'])) {
-				$usergroup = explode(';', $_SERVER['affiliation']);
-				array_walk($usergroup, create_function('&$v,$k', '$v = preg_replace("/@.*/", "", $v);'));
-				// todo: insert the groups if they are not there.
-				
-				// fetch the group ids
-			}
-			
-			$user = array('crdate' => time(),
-				'tstamp' => time(),
-				'pid' => $this->conf['storagePid'],
-				'username' => $this->remoteUser,
-				'password' => t3lib_div::shortMD5(uniqid(rand(), true)),
-				'email' => $_SERVER['mail'],
-				'name' => $_SERVER['displayName'],
-				);
-			$GLOBALS['TYPO3_DB']->exec_INSERTquery($this->authInfo['db_user']['table'], $user);
-		}
+	protected function importFEUser() {
+		$this->writelog(255,3,3,2,
+			"Importing user %s (%s), username '%s' not found!!",
+			Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']));
+		
+		$user = array('crdate' => time(),
+			'tstamp' => time(),
+			'pid' => $this->conf['storagePid'],
+			'username' => $this->remoteUser,
+			'password' => t3lib_div::shortMD5(uniqid(rand(), true)),
+			'email' => $_SERVER[$this->conf['mail']],
+			'name' => $_SERVER[$this->conf['displayName']],
+			'usergroup' => $this->getFEUserGroups(),
+			);
+		$GLOBALS['TYPO3_DB']->exec_INSERTquery($this->authInfo['db_user']['table'], $user);
 	}
 	
 	/**
 	 * @return	boolean
 	 */
-	protected function updateUser($user) {
-		if ($this->authInfo['loginType'] == 'FE' && $this->conf['enableAutoImport']) {
-			// todo:
+	protected function updateFEUser() {
+		$this->writelog(255,3,3,2,
+			"Importing user %s (%s), username '%s' not found!!",
+			Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']));
+		
+		$where = "username = '".$this->remoteUser."' AND pid = " . $this->conf['storagePid'];
+		$user = array('tstamp' => time(),
+			'username' => $this->remoteUser,
+			'password' => t3lib_div::shortMD5(uniqid(rand(), true)),
+			'email' => $_SERVER[$this->conf['mail']],
+			'name' => $_SERVER[$this->conf['displayName']],
+			'usergroup' => $this->getFEUserGroups(),
+			);
+		$GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->authInfo['db_user']['table'], $where, $user);
+	}
+	
+	protected function getFEUserGroups() {
+		$feGroups = array();
+		if (!empty($_SERVER[$this->conf['eduPersonAffiliation']])) {
+			$affiliation = explode(';', $_SERVER[$this->conf['eduPersonAffiliation']]);
+			array_walk($affiliation, create_function('&$v,$k', '$v = preg_replace("/@.*/", "", $v);'));
+			
+			// insert the affiliations in fe_groups if they are not there.
+			foreach ($affiliation as $title) {
+				$dbres = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid, title',
+					$this->authInfo['db_groups']['table'],
+					"deleted = 0 AND pid = ".$this->conf['storagePid'] . " AND title = '$title'");
+				if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($dbres)) {
+					$feGroups[] = $row['uid'];
+				} else {
+					$group = array('title' => $title, 'pid' => $this->conf['storagePid']);
+					$GLOBALS['TYPO3_DB']->exec_INSERTquery($this->authInfo['db_groups']['table'], $user);
+					$feGroups[] = $GLOBALS['TYPO3_DB']->sql_insert_id();
+				}
+				if ($dbres) $GLOBALS['TYPO3_DB']->sql_free_result($dbres);
+			}
 		}
+		return implode(',', $feGroups);
 	}
 	
 	/**
