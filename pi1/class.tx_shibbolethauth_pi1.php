@@ -89,6 +89,8 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		} else {
 			if ($this->logintype == 'logout') {
 				$content = $this->showLogoutSuccess();
+			} else if ($this->logintype == 'login' && !empty($this->remoteUser)) {
+				$content = $this->pi_getLL('error_message', '', 1);
 			} else {
 				$content = $this->showLogin();
 			}
@@ -103,15 +105,13 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 	 * @return	string		content
 	 */
 	protected function showLogin() {
-		//if (empty($this->remoteUser)) {
-			$target = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
-			if(stristr($target, '?') === FALSE) $target .= '?';
-			else $target .= '&';
-			$target .= 'logintype=login&pid='.$this->conf['storagePid'];
-			$redirectUrl = $this->conf['loginHandler'] . '?target=' . rawurlencode($target);
-			$redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
-			t3lib_utility_Http::redirect($redirectUrl);
-		//}
+		$target = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
+		if(stristr($target, '?') === FALSE) $target .= '?';
+		else $target .= '&';
+		$target .= 'logintype=login&pid='.$this->conf['storagePid'];
+		$redirectUrl = $this->conf['loginHandler'] . '?target=' . rawurlencode($target);
+		$redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
+		t3lib_utility_Http::redirect($redirectUrl);
 	}
 	
 	protected function showLoginSuccess() {
@@ -160,6 +160,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		$redirectUrl = $this->conf['logoutHandler'];
 		$redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
 		t3lib_utility_Http::redirect($redirectUrl);
+		
 		
 		$subpart = $this->cObj->getSubpart($this->template, '###TEMPLATE_LOGOUT_SUCCESS###');
 		

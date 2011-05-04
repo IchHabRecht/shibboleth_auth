@@ -11,10 +11,10 @@ enableAutoImport = 0
 storagePid = 0
 
 # cat=basic; type=string; label=Shibboleth Login Handler
-loginHandler = /Shibhandler/Login
+loginHandler = /Shibboleth.sso/Login
 
 # cat=basic; type=string; label=Shibboleth Logout Handler
-logoutHandler = /Shibhandler/Logout
+logoutHandler = /Shibboleth.sso/Logout
 
 # cat=basic; type=string; label=Shibboleth UserID ServerVar
 remoteUser = REMOTE_USER

@@ -165,7 +165,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 					$feGroups[] = $row['uid'];
 				} else {
 					$group = array('title' => $title, 'pid' => $this->conf['storagePid']);
-					$GLOBALS['TYPO3_DB']->exec_INSERTquery($this->authInfo['db_groups']['table'], $user);
+					$GLOBALS['TYPO3_DB']->exec_INSERTquery($this->authInfo['db_groups']['table'], $group);
 					$feGroups[] = $GLOBALS['TYPO3_DB']->sql_insert_id();
 				}
 				if ($dbres) $GLOBALS['TYPO3_DB']->sql_free_result($dbres);
