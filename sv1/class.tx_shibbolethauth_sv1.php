@@ -84,8 +84,8 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	function getUser() {
 		$user = false;
 		
-		if ($this->login['status']=='login' && $this->login['uname'])	{
-			$user = $this->fetchUserRecord($this->login['uname']);
+		if ($this->login['status']=='login' && $this->remoteUser)	{
+			$user = $this->fetchUserRecord($this->remoteUser);
 			
 			if(!is_array($user) || empty($user)) {
 				if ($this->authInfo['loginType'] == 'FE' && !empty($this->remoteUser) && $this->conf['enableAutoImport']) {
@@ -94,8 +94,8 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 					// Failed login attempt (no username found)
 					$this->writelog(255,3,3,2,
 						"Login-attempt from %s (%s), username '%s' not found!!",
-						Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']));
-					t3lib_div::sysLog(sprintf( "Login-attempt from %s (%s), username '%s' not found!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname'] ), 'Core', 0);
+						Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser));
+					t3lib_div::sysLog(sprintf("Login-attempt from %s (%s), username '%s' not found!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser), 'Core', 0);
 				}
 			} else {
 				if ($this->authInfo['loginType'] == 'FE' && $this->conf['enableAutoImport']) {
@@ -105,7 +105,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			}
 			if ($this->authInfo['loginType'] == 'FE') {
 				// the fe_user was updated, it should be fetched again.
-				$user = $this->fetchUserRecord($this->login['uname']);
+				$user = $this->fetchUserRecord($this->remoteUser);
 			}
 		}
 		return $user;
@@ -117,7 +117,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	protected function importFEUser() {
 		$this->writelog(255,3,3,2,
 			"Importing user %s (%s), username '%s' not found!!",
-			Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']));
+			Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser));
 		
 		$user = array('crdate' => time(),
 			'tstamp' => time(),
@@ -136,8 +136,8 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	 */
 	protected function updateFEUser() {
 		$this->writelog(255,3,3,2,
-			"Importing user %s (%s), username '%s' not found!!",
-			Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']));
+			"Updating user %s (%s), username '%s' not found!!",
+			Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser));
 		
 		$where = "username = '".$this->remoteUser."' AND pid = " . $this->conf['storagePid'];
 		$user = array('tstamp' => time(),
@@ -171,6 +171,15 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 				if ($dbres) $GLOBALS['TYPO3_DB']->sql_free_result($dbres);
 			}
 		}
+		
+		// Hook for any additional fe_groups
+		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['getFEUserGroups'])) {
+			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['getFEUserGroups'] as $_classRef) {
+				$_procObj = & t3lib_div::getUserObj($_classRef);
+				$feGroups = $_procObj->getFEUserGroups($this, $feGroups);
+			}
+		}
+		
 		return implode(',', $feGroups);
 	}
 	
@@ -202,8 +211,8 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			if ($this->writeAttemptLog) {
 				$this->writelog(255,3,3,1,
 					"Login-attempt from %s (%s), username '%s', password not accepted!",
-					array($this->info['REMOTE_ADDR'], $this->info['REMOTE_HOST'], $this->login['uname']));
-				t3lib_div::sysLog(sprintf("Login-attempt from %s (%s), username '%s', password not accepted!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->login['uname']), 'Core', 0 );
+					array($this->info['REMOTE_ADDR'], $this->info['REMOTE_HOST'], $this->remoteUser));
+				t3lib_div::sysLog(sprintf("Login-attempt from %s (%s), username '%s', password not accepted!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser), 'Core', 0 );
 			}
 			$OK = 0;
 		}

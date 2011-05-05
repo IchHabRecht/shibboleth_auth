@@ -3,30 +3,28 @@ if (!defined('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
-$config = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$_EXTKEY]);
+$_EXTCONF = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$_EXTKEY]);
 
 $subTypes = array();
 
-if ($config['enableBE']) {
+if ($_EXTCONF['enableBE']) {
 	$subTypes[] = 'getUserBE';
 	$subTypes[] = 'authUserBE';
 	
-	// If this is set Auth Services will come into play everytime a page is requested without a valid user session. If you want to implement a single sign on scenario you will need to set this.
-	$GLOBALS['TYPO3_CONF_VARS']['SVCONF']['auth']['setup']['BE_fetchUserIfNoSession']=1;
+	$GLOBALS['TYPO3_CONF_VARS']['SVCONF']['auth']['setup']['BE_fetchUserIfNoSession'] = $_EXTCONF['BE_fetchUserIfNoSession'];
 	
 	if (TYPO3_MODE == 'BE') {
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_userauth.php']['logoff_post_processing'][] = 'EXT:'.$_EXTKEY.'/hooks/class.tx_shibbolethauth_userauth.php:tx_shibbolethauth_userauth->logoutBE';
 	}
 }
 
-if ($config['enableFE']) {
+if ($_EXTCONF['enableFE']) {
 	$subTypes[] = 'getUserFE';
 	$subTypes[] = 'authUserFE';
 	
 	t3lib_extMgm::addPItoST43($_EXTKEY, 'pi1/class.tx_shibbolethauth_pi1.php', '_pi1', 'list_type', 0);
 	
-	// If this is set Auth Services will come into play everytime a page is requested without a valid user session. If you want to implement a single sign on scenario you will need to set this.
-	//$GLOBALS['TYPO3_CONF_VARS']['SVCONF']['auth']['setup']['FE_fetchUserIfNoSession']=1;
+	$GLOBALS['TYPO3_CONF_VARS']['SVCONF']['auth']['setup']['FE_fetchUserIfNoSession'] = $_EXTCONF['FE_fetchUserIfNoSession'];
 }
 
 t3lib_extMgm::addService($_EXTKEY, 'auth',  'tx_shibbolethauth_sv1',
@@ -37,7 +35,7 @@ t3lib_extMgm::addService($_EXTKEY, 'auth',  'tx_shibbolethauth_sv1',
 		'subtype' => implode(',', $subTypes),
 
 		'available' => TRUE,
-		'priority' => 100,
+		'priority' => $_EXTCONF['priority'],
 		'quality' => 50,
 
 		'os' => '',
