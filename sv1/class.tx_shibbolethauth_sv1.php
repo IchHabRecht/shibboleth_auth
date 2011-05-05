@@ -175,7 +175,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 		// Hook for any additional fe_groups
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['getFEUserGroups'])) {
 			foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['getFEUserGroups'] as $_classRef) {
-				$_procObj = & t3lib_div::getUserObj($_classRef);
+				$_procObj =& t3lib_div::getUserObj($_classRef);
 				$feGroups = $_procObj->getFEUserGroups($feGroups);
 			}
 		}
