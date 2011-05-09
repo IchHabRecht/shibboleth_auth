@@ -46,6 +46,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 	protected $logintype;	// logintype (given as GPvar), possible: login, logout
 	public $conf;
 	
+	private $extConf;
 	private $remoteUser;
 	
 	/**
@@ -61,15 +62,11 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		$this->pi_loadLL();
 		$this->pi_USER_INT_obj = true;	// Configuring so caching is not expected. This value means that no cHash params are ever set. We do this, because it's a USER_INT object!
 		
-		$this->initPIflexForm(); //Flexform variables into conf
-		
-		$_EXTCONF = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
-		if (empty($_EXTCONF['remoteUser'])) $_EXTCONF['remoteUser'] = 'REMOTE_USER';
-		if ($_SERVER['AUTH_TYPE'] == 'shibboleth') $this->remoteUser = $_SERVER[$_EXTCONF['remoteUser']];
-		
-		$this->conf['storagePid'] = $_EXTCONF['storagePid'];
-		$this->conf['loginHandler'] = $_EXTCONF['loginHandler'];
-		$this->conf['logoutHandler'] = $_EXTCONF['logoutHandler'];
+		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
+		if (empty($this->extConf['remoteUser'])) $this->extConf['remoteUser'] = 'REMOTE_USER';
+		if (isset($_SERVER['AUTH_TYPE']) && $_SERVER['AUTH_TYPE'] == 'shibboleth') {
+			$this->remoteUser = $_SERVER[$this->extConf['remoteUser']];
+		}
 		
 		$templateFile = $this->conf['templateFile'] ? $this->conf['templateFile'] : 'EXT:'.$this->extKey.'/pi1/template.html';
 		$this->template = $this->cObj->fileResource($templateFile);
@@ -81,6 +78,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		
 		// What to display
 		if($this->userIsLoggedIn) {
+			$this->remoteUser = $GLOBALS['TSFE']->fe_user->user['username'];
 			if ($this->logintype == 'login') {
 				$content = $this->showLoginSuccess();
 			} else {
@@ -89,7 +87,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		} else {
 			if ($this->logintype == 'logout') {
 				$content = $this->showLogoutSuccess();
-			} else if ($this->logintype == 'login' && !empty($this->remoteUser)) {
+			} else if ($this->logintype == 'login') {
 				$content = $this->pi_getLL('error_message', '', 1);
 			} else {
 				$content = $this->showLogin();
@@ -106,10 +104,17 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 	 */
 	protected function showLogin() {
 		$target = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
+		$target = t3lib_div::removeXSS($target);
+		if ($this->extConf['forceSSL'] && stristr($target, 'https:') === FALSE) {
+			$target = str_ireplace('http:', 'https:', $target);
+			if (!preg_match('#["<>\\\]+#', $target)) {
+				t3lib_utility_Http::redirect($target);
+			}
+		}
 		if(stristr($target, '?') === FALSE) $target .= '?';
 		else $target .= '&';
-		$target .= 'logintype=login&pid='.$this->conf['storagePid'];
-		$redirectUrl = $this->conf['loginHandler'] . '?target=' . rawurlencode($target);
+		$target .= 'logintype=login&pid='.$this->extConf['storagePid'];
+		$redirectUrl = $this->extConf['loginHandler'] . '?target=' . rawurlencode($target);
 		$redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
 		t3lib_utility_Http::redirect($redirectUrl);
 	}
@@ -149,7 +154,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		$markerArray['###ACTION_URI###'] = htmlspecialchars($this->cObj->typolink_url($this->conf['linkConfig.']));;
 		$markerArray['###LOGOUT_LABEL###'] = $this->pi_getLL('logout', '', 1);
 		$markerArray['###NAME###'] = htmlspecialchars($GLOBALS['TSFE']->fe_user->user['name']);
-		$markerArray['###STORAGE_PID###'] = $this->conf['storagePid'];
+		$markerArray['###STORAGE_PID###'] = $this->extConf['storagePid'];
 		$markerArray['###USERNAME###'] = htmlspecialchars($GLOBALS['TSFE']->fe_user->user['username']);
 		$markerArray['###USERNAME_LABEL###'] = $this->pi_getLL('username', '', 1);
 		
@@ -157,17 +162,16 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 	}
 	
 	protected function showLogoutSuccess() {
-		$redirectUrl = $this->conf['logoutHandler'];
+		$redirectUrl = $this->extConf['logoutHandler'];
 		$redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
 		t3lib_utility_Http::redirect($redirectUrl);
-		
 		
 		$subpart = $this->cObj->getSubpart($this->template, '###TEMPLATE_LOGOUT_SUCCESS###');
 		
 		$markerArray['###STATUS_HEADER###'] = $this->pi_getLL('logout_header', '', 1);
 		$markerArray['###STATUS_MESSAGE###'] = $this->pi_getLL('logout_message', '', 1);
 		$markerArray['###SHIBBOLETH_LOGOUT_TEXT###'] = $this->pi_getLL('shibboleth_logout', '', 1);
-		$markerArray['###SHIBBOLETH_LOGOUT_LINK###'] = '<a href="'.$this->conf['logoutHandler'].'">' . $this->pi_getLL('logout', '', 1) . '</a>';
+		$markerArray['###SHIBBOLETH_LOGOUT_LINK###'] = '<a href="'.$this->extConf['logoutHandler'].'">' . $this->pi_getLL('logout', '', 1) . '</a>';
 		
 		return $this->cObj->substituteMarkerArrayCached($subpart, $markerArray, $subpartArray);
 	}
@@ -180,7 +184,6 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 	 * @return	string		additionalParams-string
 	 */
 	 private function getPreserveGetVars() {
-
 		$params = '';
 		$preserveVars =! ($this->conf['preserveGETvars'] || $this->conf['preserveGETvars']=='all' ? array() : implode(',', (array)$this->conf['preserveGETvars']));
 		$getVars = t3lib_div::_GET();
@@ -201,29 +204,6 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 			}
 		}
 		return $params;
-	}
-	
-	private function initPIflexForm() {
-		// FlexForms
-		// Init the flexform data of the plugin
-		$this->pi_initPIflexform();
-		// Copy the flexform data to a new object
-		$piFlexForm = $this->cObj->data['pi_flexform'];
-		
-		// Combine FlexForm and TS values
-		if ($piFlexForm['data']) {
-			foreach ($piFlexForm['data'] as $sheet => $data) {
-				foreach ($data as $lang => $value) {
-					foreach ($value as $key => $val) {
-						$val = $this->pi_getFFvalue($piFlexForm, $key, $sheet);
-						/* If value exists in Flexform, overwrite existing Typoscript value or create new array entry */
-						if ($val != null) {
-							$this->conf[$key] = $val;
-						}
-					}
-				}
-			}
-		}
 	}
 }
 

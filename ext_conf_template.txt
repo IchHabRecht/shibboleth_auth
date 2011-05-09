@@ -13,6 +13,9 @@ BE_fetchUserIfNoSession = 1
 # cat=basic/enable; type=boolean; label=FE_fetchUserIfNoSession: If this is enabled the service will always be called if there is no valid frontend user session (Needed for singleSignOn). If not then the service will only be called if the authentification process sees incoming data from a form.
 FE_fetchUserIfNoSession = 0
 
+# cat=basic/enable; type=boolean; label=Force SSL (recommended): Check to enforce using SSL.
+forceSSL = 1
+
 # cat=basic; type=int+; label=Auth Priority: maximum 100
 priority = 100
 

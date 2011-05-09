@@ -28,7 +28,8 @@
 			<label index="logout_header">Sie haben sich abgemeldet</label>
 			<label index="logout_message">Sie haben sich gerade von der Benutzersession abgemeldet.</label>
 			<label index="error_header">Login Fehler</label>
-			<label index="error_message">Während der Anmeldung ist ein Fehler aufgetreten. Wahrscheinlich haben Sie Ihren Benutzernamen oder das Passwort falsch eingegeben. Vergewissern Sie sich, dass Sie beide Angaben korrekt eingegeben haben - Groß-/Kleinschreibung wird unterschieden. Eine andere Möglichkeit ist, dass Sie eventuell die Cookies in Ihrem Web-Browser deaktiviert haben.</label>
+			<label index="error_message">Bei der Authentifizierung ist ein Fehler aufgetreten. Bitte achten Sie darauf, dass in den Seiteneinstellungen "SSL enforce mode" auf "HTTPS" gesetzt ist.&lt;br/&gt;
+			Während der Anmeldung ist ein Fehler aufgetreten. Wahrscheinlich haben Sie Ihren Benutzernamen oder das Passwort falsch eingegeben. Vergewissern Sie sich, dass Sie beide Angaben korrekt eingegeben haben - Groß-/Kleinschreibung wird unterschieden. Eine andere Möglichkeit ist, dass Sie eventuell die Cookies in Ihrem Web-Browser deaktiviert haben.</label>
 			<label index="success_header">Login erfolgreich</label>
 			<label index="success_message">Sie sind nun eingeloggt als '###USER###'.</label>
 			<label index="status_header">Verbindungsstatus</label>
