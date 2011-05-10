@@ -117,6 +117,19 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 				$user = $this->fetchUserRecord($this->remoteUser);
 			}
 		}
+		
+		if ($this->authInfo['loginType'] == 'BE' && $this->extConf['onlyShibbolethBE'] && empty($user)) {
+			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['onlyShibbolethFunc'])) {
+				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['onlyShibbolethFunc'] as $_classRef) {
+					$_procObj =& t3lib_div::getUserObj($_classRef);
+					$feGroups = $_procObj->onlyShibbolethFunc($feGroups);
+				}
+			} else {
+				t3lib_BEfunc::typo3printError('Login error', 'User not found in Typo3!');
+			}
+			exit;
+		}
+		
 		return $user;
 	}
 	

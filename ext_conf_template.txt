@@ -16,6 +16,9 @@ FE_fetchUserIfNoSession = 0
 # cat=basic/enable; type=boolean; label=Force SSL (recommended): Check to enforce using SSL.
 forceSSL = 1
 
+# cat=basic/enable; type=boolean; label=Only Shibboleth Backend: Enable backend authentication against Shibboleth *only*.
+onlyShibbolethBE = 0
+
 # cat=basic; type=int+; label=Auth Priority: maximum 100
 priority = 100
 
