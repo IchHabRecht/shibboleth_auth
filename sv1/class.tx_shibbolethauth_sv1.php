@@ -131,10 +131,11 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	 * @param	array		Array containing FE user data of the logged user.
 	 * @return	integer		authentication statuscode, one of 0,100 and 200
 	 */
-	function authUser(&$user) {
+	function authUser($user) {
 		$OK = 100;
 		
-		if ($this->isShibbolethLogin() && !empty($this->remoteUser) && empty($this->login['uname']) && !empty($user) && ($this->remoteUser == $user[$this->authInfo['db_user']['username_column']])) {
+		if ($this->isShibbolethLogin() && empty($this->login['uname']) &&
+			!empty($this->remoteUser) && !empty($user) && ($this->remoteUser == $user[$this->authInfo['db_user']['username_column']])) {
 			$OK = 200;
 			
 			if ($user['lockToDomain'] && $user['lockToDomain']!=$this->authInfo['HTTP_HOST']) {
