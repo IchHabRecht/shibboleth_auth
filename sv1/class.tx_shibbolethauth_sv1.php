@@ -62,7 +62,12 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	 * @return	void
 	 */
 	function initAuth($mode, $loginData, $authInfo, $pObj) {
+		if (defined('TYPO3_cliMode')) {
+			return parent::initAuth($mode, $loginData, $authInfo, $pObj);
+		}
+		
 		$logintype = t3lib_div::_GP('logintype');
+		$this->login = $loginData;
 		if (empty($this->remoteUser) && empty($logintype)) {
 			$target = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
 			$target = t3lib_div::removeXSS($target);
@@ -118,7 +123,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			}
 		}
 		
-		if ($this->authInfo['loginType'] == 'BE' && $this->extConf['onlyShibbolethBE'] && empty($user)) {
+		if (!defined('TYPO3_cliMode') && $this->authInfo['loginType'] == 'BE' && $this->extConf['onlyShibbolethBE'] && empty($user)) {
 			if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['onlyShibbolethFunc'])) {
 				foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['onlyShibbolethFunc'] as $_classRef) {
 					$_procObj =& t3lib_div::getUserObj($_classRef);
@@ -147,8 +152,12 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	function authUser($user) {
 		$OK = 100;
 		
-		if ($this->isShibbolethLogin() && empty($this->login['uname']) &&
-			!empty($this->remoteUser) && !empty($user) && ($this->remoteUser == $user[$this->authInfo['db_user']['username_column']])) {
+		if (defined('TYPO3_cliMode')) {
+			$OK = 100;
+		} else if (!empty($this->login['uname'])) {
+			$OK = 100;
+		} else if ($this->isShibbolethLogin() && !empty($this->remoteUser)
+			&& !empty($user) && ($this->remoteUser == $user[$this->authInfo['db_user']['username_column']])) {
 			$OK = 200;
 			
 			if ($user['lockToDomain'] && $user['lockToDomain']!=$this->authInfo['HTTP_HOST']) {
