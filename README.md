@@ -1,16 +1,16 @@
 # TYPO3 Extension "shibboleth_auth"
 Shibboleth Single Sign On Authentication (BE & FE). The FE Users will be imported automatically into the configured storage pid.
 
-## Version 2.4.1
+## Version 2.4.2
 
 
 
 
 <table>
-	<tr><td>Version</td><td>2.4.1 stable</td></tr>
-	<tr><td>Release date</td><td>23. May 2011</td></tr>
+	<tr><td>Version</td><td>2.4.2 stable</td></tr>
+	<tr><td>Release date</td><td>24. May 2011</td></tr>
 	<tr><td>Author</td><td>Tamer Erdogan</td></tr>
-	<tr><td>Comment</td><td>TYPO3_cliMode bugfix. Cli users should not be authenticated with shibboleth auth.</td></tr>
+	<tr><td>Comment</td><td>Realurl Bugfix. Apache mod_rewrite adds REDIRECT_ prefix in SERVER Vars.</td></tr>
 </table>
 
 ## !! Attention !!

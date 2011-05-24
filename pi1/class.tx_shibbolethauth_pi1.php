@@ -120,6 +120,11 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 	}
 	
 	protected function showLoginSuccess() {
+		$redirectUrl = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
+		$redirectUrl = preg_replace('/[\?|&]logintype=login&pid='.$this->extConf['storagePid'].'/', '', $redirectUrl);
+		$redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
+		t3lib_utility_Http::redirect($redirectUrl);
+		
 		$subpart = $this->cObj->getSubpart($this->template, '###TEMPLATE_LOGIN_SUCCESS###');
 		
 		$markerArray['###STATUS_HEADER###'] = $this->pi_getLL('success_header', '', 1);

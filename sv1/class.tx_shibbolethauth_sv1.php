@@ -66,9 +66,8 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			return parent::initAuth($mode, $loginData, $authInfo, $pObj);
 		}
 		
-		$logintype = t3lib_div::_GP('logintype');
 		$this->login = $loginData;
-		if (empty($this->remoteUser) && empty($logintype)) {
+		if(empty($this->login['uname']) && empty($this->remoteUser)) {
 			$target = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
 			$target = t3lib_div::removeXSS($target);
 			if ($this->extConf['forceSSL'] && stristr($target, 'https:') === FALSE) {
@@ -77,9 +76,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 					t3lib_utility_Http::redirect($target);
 				}
 			}
-			if (TYPO3_MODE == 'BE') {
-				$target .= '?logintype=login';
-			}
+			
 			if (TYPO3_MODE == 'FE') {
 				if(stristr($target, '?') === FALSE) $target .= '?';
 				else $target .= '&';
@@ -87,8 +84,9 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			}
 			$redirectUrl = $this->extConf['loginHandler'] . '?target=' . rawurlencode($target);
 			$redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
+			
 			t3lib_utility_Http::redirect($redirectUrl);
-		} else if ($this->isShibbolethLogin()) {
+		} else {
 			$loginData['status'] = 'login';
 			parent::initAuth($mode, $loginData, $authInfo, $pObj);
 		}
@@ -97,7 +95,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	function getUser() {
 		$user = false;
 		
-		if ($this->login['status']=='login' && $this->isShibbolethLogin() && !empty($this->remoteUser) && empty($this->login['uname'])) {
+		if ($this->login['status']=='login' && $this->isShibbolethLogin() && empty($this->login['uname'])) {
 			$user = $this->fetchUserRecord($this->remoteUser);
 			
 			if(!is_array($user) || empty($user)) {
@@ -109,13 +107,13 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 					$this->writelog(255,3,3,2,
 						"Login-attempt from %s (%s), username '%s' not found!!",
 						Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser));
-					t3lib_div::sysLog(sprintf("Login-attempt from %s (%s), username '%s' not found!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser), 'Core', 0);
+					t3lib_div::sysLog(sprintf("Login-attempt from %s (%s), username '%s' not found!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser), $this->extKey, 0);
 				}
 			} else {
 				if ($this->authInfo['loginType'] == 'FE' && $this->extConf['enableAutoImport']) {
 					$this->updateFEUser();
 				}
-				if ($this->writeDevLog) t3lib_div::devLog('User found: '.t3lib_div::arrayToLogString($user, array($this->db_user['userid_column'],$this->db_user['username_column'])), 'tx_sv_auth');
+				if ($this->writeDevLog) t3lib_div::devLog('User found: ' . t3lib_div::arrayToLogString($user, array($this->db_user['userid_column'], $this->db_user['username_column'])), $this->extKey);
 			}
 			if ($this->authInfo['loginType'] == 'FE') {
 				// the fe_user was updated, it should be fetched again.
@@ -154,10 +152,10 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 		
 		if (defined('TYPO3_cliMode')) {
 			$OK = 100;
-		} else if (!empty($this->login['uname'])) {
+		} else if (($this->authInfo['loginType'] == 'FE') && !empty($this->login['uname'])) {
 			$OK = 100;
-		} else if ($this->isShibbolethLogin() && !empty($this->remoteUser)
-			&& !empty($user) && ($this->remoteUser == $user[$this->authInfo['db_user']['username_column']])) {
+		} else if ($this->isShibbolethLogin() && !empty($user)
+			&& ($this->remoteUser == $user[$this->authInfo['db_user']['username_column']])) {
 			$OK = 200;
 			
 			if ($user['lockToDomain'] && $user['lockToDomain']!=$this->authInfo['HTTP_HOST']) {
@@ -167,7 +165,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 						"Login-attempt from %s (%s), username '%s', locked domain '%s' did not match '%s'!",
 						array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $user[$this->authInfo['db_user']['username_column']], $user['lockToDomain'], $this->authInfo['HTTP_HOST']));
 					t3lib_div::sysLog(sprintf( "Login-attempt from %s (%s), username '%s', locked domain '%s' did not match '%s'!",
-						$this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $user[$this->authInfo['db_user']['username_column']], $user['lockToDomain'], $this->authInfo['HTTP_HOST']), 'Core', 0);
+						$this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $user[$this->authInfo['db_user']['username_column']], $user['lockToDomain'], $this->authInfo['HTTP_HOST']), $this->extKey, 0);
 				}
 				$OK = 0;
 			}
@@ -177,7 +175,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 				$this->writelog(255,3,3,1,
 					"Login-attempt from %s (%s), username '%s', password not accepted!",
 					array($this->info['REMOTE_ADDR'], $this->info['REMOTE_HOST'], $this->remoteUser));
-				t3lib_div::sysLog(sprintf("Login-attempt from %s (%s), username '%s', password not accepted!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser), 'Core', 0 );
+				t3lib_div::sysLog(sprintf("Login-attempt from %s (%s), username '%s', password not accepted!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser), $this->extKey, 0 );
 			}
 			$OK = 0;
 		}
@@ -186,17 +184,15 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	}
 	
 	protected function importFEUser() {
-		$this->writelog(255,3,3,2,
-			"Importing user %s (%s), username '%s' not found!!",
-			Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser));
+		$this->writelog(255,3,3,2, "Importing user %s!", array($this->remoteUser));
 		
 		$user = array('crdate' => time(),
 			'tstamp' => time(),
 			'pid' => $this->extConf['storagePid'],
 			'username' => $this->remoteUser,
 			'password' => t3lib_div::shortMD5(uniqid(rand(), true)),
-			'email' => $_SERVER[$this->extConf['mail']],
-			'name' => $_SERVER[$this->extConf['displayName']],
+			'email' => $this->getServerVar($this->extConf['mail']),
+			'name' => $this->getServerVar($this->extConf['displayName']),
 			'usergroup' => $this->getFEUserGroups(),
 			);
 		$GLOBALS['TYPO3_DB']->exec_INSERTquery($this->authInfo['db_user']['table'], $user);
@@ -206,16 +202,14 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	 * @return	boolean
 	 */
 	protected function updateFEUser() {
-		$this->writelog(255,3,3,2,
-			"Updating user %s (%s), username '%s' not found!!",
-			Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser));
+		$this->writelog(255,3,3,2,	"Updating user %s!", array($this->remoteUser));
 		
 		$where = "username = '".$this->remoteUser."' AND pid = " . $this->extConf['storagePid'];
 		$user = array('tstamp' => time(),
 			'username' => $this->remoteUser,
 			'password' => t3lib_div::shortMD5(uniqid(rand(), true)),
-			'email' => $_SERVER[$this->extConf['mail']],
-			'name' => $_SERVER[$this->extConf['displayName']],
+			'email' => $this->getServerVar($this->extConf['mail']),
+			'name' => $this->getServerVar($this->extConf['displayName']),
 			'usergroup' => $this->getFEUserGroups(),
 			);
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->authInfo['db_user']['table'], $where, $user);
@@ -223,8 +217,10 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	
 	protected function getFEUserGroups() {
 		$feGroups = array();
-		if (!empty($_SERVER[$this->extConf['eduPersonAffiliation']])) {
-			$affiliation = explode(';', $_SERVER[$this->extConf['eduPersonAffiliation']]);
+		$eduPersonAffiliation = $this->getServerVar($this->extConf['eduPersonAffiliation']);
+		if (empty($eduPersonAffiliation)) $eduPersonAffiliation = 'member';
+		if (!empty($eduPersonAffiliation)) {
+			$affiliation = explode(';', $eduPersonAffiliation);
 			array_walk($affiliation, create_function('&$v,$k', '$v = preg_replace("/@.*/", "", $v);'));
 			
 			// insert the affiliations in fe_groups if they are not there.
@@ -254,12 +250,26 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 		return implode(',', $feGroups);
 	}
 	
-
 	/**
 	 * @return	boolean
 	 */
 	private function isShibbolethLogin() {
-		return isset($_SERVER['AUTH_TYPE']) && ($_SERVER['AUTH_TYPE'] == 'shibboleth') && isset($_SERVER['Shib_Session_ID']) && !empty($_SERVER['Shib_Session_ID']);
+		return isset($_SERVER['AUTH_TYPE']) && ($_SERVER['AUTH_TYPE'] == 'shibboleth') && !empty($this->remoteUser);
+	}
+	
+	private function getServerVar($key, $prefix='REDIRECT_') {
+		if (isset($_SERVER[$key])) {
+			return $_SERVER[$key];
+		} else if (isset($_SERVER[$prefix.$key])) {
+			return $_SERVER[$prefix.$key];
+		} else {
+			foreach($_SERVER as $k=>$v) {
+				if ($key == str_replace($prefix, '', $k)) {
+					return $v;
+				}
+			}
+		}
+		return null;
 	}
 }
 
