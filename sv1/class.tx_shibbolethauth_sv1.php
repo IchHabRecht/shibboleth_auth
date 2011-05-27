@@ -190,7 +190,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			'tstamp' => time(),
 			'pid' => $this->extConf['storagePid'],
 			'username' => $this->remoteUser,
-			'password' => t3lib_div::shortMD5(uniqid(rand(), true)),
+			'password' => md5(t3lib_div::shortMD5(uniqid(rand(), true))),
 			'email' => $this->getServerVar($this->extConf['mail']),
 			'name' => $this->getServerVar($this->extConf['displayName']),
 			'usergroup' => $this->getFEUserGroups(),
