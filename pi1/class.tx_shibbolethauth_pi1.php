@@ -105,7 +105,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 	protected function showLogin() {
 		$target = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
 		$target = t3lib_div::removeXSS($target);
-		if ($this->extConf['forceSSL'] && stristr($target, 'https:') === FALSE) {
+		if ($this->extConf['forceSSL'] && !t3lib_div::getIndpEnv('TYPO3_SSL')) {
 			$target = str_ireplace('http:', 'https:', $target);
 			if (!preg_match('#["<>\\\]+#', $target)) {
 				t3lib_utility_Http::redirect($target);
