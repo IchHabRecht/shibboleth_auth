@@ -128,8 +128,9 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 					$feGroups = $_procObj->onlyShibbolethFunc($feGroups);
 				}
 			} else {
-				t3lib_BEfunc::typo3printError('Login error', 'User not found in Typo3!');
+				t3lib_BEfunc::typo3printError('Login error', '<h1>User ('.$this->remoteUser.') not found!</h1><h2><a href="'.$this->extConf['logoutHandler'].'">Shibboleth Logout</a></h2>');
 			}
+			foreach($_COOKIE as $key=>$val) unset($_COOKIE[$key]);
 			exit;
 		}
 		
