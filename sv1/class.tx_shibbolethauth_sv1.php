@@ -36,8 +36,8 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	public $extKey = 'shibboleth_auth';	// The extension key.
 	public $pObj;
 	
-	private $extConf;
-	private $remoteUser;
+	protected $extConf;
+	protected $remoteUser;
 	
 	/**
 	 * Inits some variables
@@ -254,11 +254,11 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	/**
 	 * @return	boolean
 	 */
-	private function isShibbolethLogin() {
+	protected function isShibbolethLogin() {
 		return isset($_SERVER['AUTH_TYPE']) && ($_SERVER['AUTH_TYPE'] == 'shibboleth') && !empty($this->remoteUser);
 	}
 	
-	private function getServerVar($key, $prefix='REDIRECT_') {
+	protected function getServerVar($key, $prefix='REDIRECT_') {
 		if (isset($_SERVER[$key])) {
 			return $_SERVER[$key];
 		} else if (isset($_SERVER[$prefix.$key])) {

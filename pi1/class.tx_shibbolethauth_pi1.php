@@ -46,8 +46,8 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 	protected $logintype;	// logintype (given as GPvar), possible: login, logout
 	public $conf;
 	
-	private $extConf;
-	private $remoteUser;
+	protected $extConf;
+	protected $remoteUser;
 	
 	/**
 	 * The main method of the PlugIn
@@ -188,7 +188,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 	 *
 	 * @return	string		additionalParams-string
 	 */
-	 private function getPreserveGetVars() {
+	 protected function getPreserveGetVars() {
 		$params = '';
 		$preserveVars =! ($this->conf['preserveGETvars'] || $this->conf['preserveGETvars']=='all' ? array() : implode(',', (array)$this->conf['preserveGETvars']));
 		$getVars = t3lib_div::_GET();
