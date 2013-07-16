@@ -3,7 +3,7 @@
 /***************************************************************
  * Extension Manager/Repository config file for ext "shibboleth_auth".
  *
- * Auto generated 10-04-2017 21:32
+ * Auto generated 10-04-2017 21:33
  *
  * Manual updates:
  * Only the data in the array - everything else is removed by next
@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = array (
 	'description' => 'Shibboleth Single Sign On Authentication (BE & FE). The FE Users will be imported automatically into the configured storage pid.',
 	'category' => 'services',
 	'shy' => 0,
-	'version' => '2.5.2',
+	'version' => '2.5.3',
 	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',
@@ -27,8 +27,8 @@ $EM_CONF[$_EXTKEY] = array (
 	'modify_tables' => '',
 	'clearcacheonload' => 0,
 	'lockType' => '',
-	'author' => 'Tamer Erdogan',
-	'author_email' => 'tamer.erdogan@univie.ac.at',
+	'author' => 'Tamer Erdogan, Richard Rode',
+	'author_email' => 'richard.rode@univie.ac.at',
 	'author_company' => '',
 	'CGLcompliance' => NULL,
 	'CGLcompliance_note' => NULL,

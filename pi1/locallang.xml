@@ -33,7 +33,7 @@
 			<label index="success_header">Login erfolgreich</label>
 			<label index="success_message">Sie sind nun eingeloggt als '###USER###'.</label>
 			<label index="status_header">Verbindungsstatus</label>
-			<label index="status_message">Hier sehen Sie ihren momentanen Verbindungsstatus.</label>
+			<label index="status_message">Hier sehen Sie Ihren momentanen Verbindungsstatus.</label>
 			<label index="username">Benutzername:</label>
 			<label index="password">Passwort:</label>
 			<label index="login">Anmelden</label>

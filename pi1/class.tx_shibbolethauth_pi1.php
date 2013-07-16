@@ -64,7 +64,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
 		if (empty($this->extConf['remoteUser'])) $this->extConf['remoteUser'] = 'REMOTE_USER';
-		if (isset($_SERVER['AUTH_TYPE']) && $_SERVER['AUTH_TYPE'] == 'shibboleth') {
+		if (isset($_SERVER['AUTH_TYPE']) && strtolower($_SERVER['AUTH_TYPE']) == 'shibboleth') {
 			$this->remoteUser = $_SERVER[$this->extConf['remoteUser']];
 		}
 		

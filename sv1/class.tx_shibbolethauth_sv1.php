@@ -255,7 +255,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	 * @return	boolean
 	 */
 	protected function isShibbolethLogin() {
-		return isset($_SERVER['AUTH_TYPE']) && ($_SERVER['AUTH_TYPE'] == 'shibboleth') && !empty($this->remoteUser);
+		return isset($_SERVER['AUTH_TYPE']) && (strtolower($_SERVER['AUTH_TYPE']) == 'shibboleth') && !empty($this->remoteUser);
 	}
 	
 	protected function getServerVar($key, $prefix='REDIRECT_') {
