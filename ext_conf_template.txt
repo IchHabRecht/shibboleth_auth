@@ -43,3 +43,9 @@ displayName = displayName
 # cat=basic; type=string; label=Shibboleth eduPersonAffiliation ServerVar
 eduPersonAffiliation = affiliation
 
+# cat=basic; type=string; label=Shibboleth Additional Attribute: Example: first_name=givenname,last_name=sn
+additionalAttr = 
+
+# cat=basic; type=string; label=Shibboleth defaultGroup: If no group retrieved, this group will be assigned
+defaultGroup = Guest
+

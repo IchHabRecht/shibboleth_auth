@@ -15,7 +15,7 @@ $EM_CONF[$_EXTKEY] = array (
 	'description' => 'Shibboleth Single Sign On Authentication (BE & FE). The FE Users will be imported automatically into the configured storage pid.',
 	'category' => 'services',
 	'shy' => 0,
-	'version' => '2.5.3',
+	'version' => '2.5.5',
 	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',
@@ -28,7 +28,7 @@ $EM_CONF[$_EXTKEY] = array (
 	'clearcacheonload' => 0,
 	'lockType' => '',
 	'author' => 'Tamer Erdogan, Richard Rode',
-	'author_email' => 'richard.rode@univie.ac.at',
+	'author_email' => 'typo3@univie.ac.at',
 	'author_company' => '',
 	'CGLcompliance' => NULL,
 	'CGLcompliance_note' => NULL,
@@ -36,8 +36,8 @@ $EM_CONF[$_EXTKEY] = array (
 	array (
 		'depends' => 
 		array (
-			'php' => '4.0.0-0.0.0',
-			'typo3' => '4.0.0-0.0.0',
+			'typo3' => '4.0.0-6.1.1',
+			'' => '',
 		),
 		'conflicts' => 
 		array (

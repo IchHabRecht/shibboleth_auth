@@ -1,7 +1,9 @@
 The following .htaccess rules must be added to htaccess file in typo3 root:
 	AuthType Shibboleth
+	ShibRequireSession Off
 	Require Shibboleth
 	
 And if you have RealUrl Extension, the following must also be added to htaccess:
-	RewriteRule ^("Shibboleth_Handler".*)/ - [L]
-It must be the first RewriteRule in htaccess.
+	RewriteRule ^(Shib.*)/ - [L]
+
+This must be the first rewrite rule in htaccess.

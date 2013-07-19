@@ -206,24 +206,56 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 		$this->writelog(255,3,3,2,	"Updating user %s!", array($this->remoteUser));
 		
 		$where = "username = '".$this->remoteUser."' AND pid = " . $this->extConf['storagePid'];
+
+		// update existing feusergroup with group from Shibboleth
+		$where2 = " AND deleted = 0";
+		$dbres2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('usergroup',$this->authInfo['db_user']['table'],$where.$where2);
+		if ($row2 = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($dbres2)) {
+			$currentGroups = $row2['usergroup'];
+		}
+		if ($dbres2) $GLOBALS['TYPO3_DB']->sql_free_result($dbres2);
+		$currentGroupsA = explode(',', $currentGroups);
+		$retGroupsA = explode(',', $this->getFEUserGroups());
+		foreach ($retGroupsA as $rg) {
+			$isExist = 0;
+			foreach ($currentGroupsA as $cg) {
+				if ($rg == $cg) $isExist = 1;
+			}
+			if (!$isExist) $currentGroupsA[] = $rg;
+		}
+		$newGroups = implode(',', $currentGroupsA);
+		// end of update feusergroup
+
 		$user = array('tstamp' => time(),
 			'username' => $this->remoteUser,
 			'password' => t3lib_div::shortMD5(uniqid(rand(), true)),
 			'email' => $this->getServerVar($this->extConf['mail']),
 			'name' => $this->getServerVar($this->extConf['displayName']),
-			'usergroup' => $this->getFEUserGroups(),
+			'usergroup' => $newGroups,
 			);
+
+		// parse additional attrb
+		if ($this->extConf['additionalAttr'] != null){
+			$additionalAttr = explode(',',$this->extConf['additionalAttr']);
+			foreach ($additionalAttr as $attr) {
+				$attrbCont = explode('=', $attr);
+				$user[$attrbCont[0]] = $this->getServerVar($attrbCont[1]);
+			}
+		}
+		// end of parse
 		$GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->authInfo['db_user']['table'], $where, $user);
 	}
 	
 	protected function getFEUserGroups() {
 		$feGroups = array();
 		$eduPersonAffiliation = $this->getServerVar($this->extConf['eduPersonAffiliation']);
-		if (empty($eduPersonAffiliation)) $eduPersonAffiliation = 'member';
+		if (empty($eduPersonAffiliation)) $eduPersonAffiliation = $this->extConf['defaultGroup'];
 		if (!empty($eduPersonAffiliation)) {
 			$affiliation = explode(';', $eduPersonAffiliation);
 			array_walk($affiliation, create_function('&$v,$k', '$v = preg_replace("/@.*/", "", $v);'));
-			
+			// parse only cn value
+			array_walk($affiliation, create_function('&$v,$k', 'preg_match("@^(?:cn=)?([^,]+)@i", $v, $matches);$v=$matches[1];'));
+
 			// insert the affiliations in fe_groups if they are not there.
 			foreach ($affiliation as $title) {
 				$dbres = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid, title',

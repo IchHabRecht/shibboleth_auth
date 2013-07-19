@@ -94,6 +94,23 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 			}
 		}
 		
+		// Redirect Status
+		$returnUrl =  t3lib_div::_GP('return_url');
+		if ($returnUrl) {
+			$this->redirectUrl = $returnUrl;
+		} else {
+			$this->redirectUrl = t3lib_div::_GP('redirect_url');
+		}
+
+		// Process Redirect
+		if ($this->userIsLoggedIn && $this->redirectUrl) {
+			if (!$GLOBALS['TSFE']->fe_user->cookieId) {
+				$content .= $this->cObj->stdWrap($this->pi_getLL('cookie_warning', '', 1), $this->conf['cookieWarning_stdWrap.']);
+			} else {
+				t3lib_utility_Http::redirect($this->redirectUrl);
+			}
+		}
+
 		return $this->conf['wrapContentInBaseClass'] ? $this->pi_wrapInBaseClass($content) : $content;
 	}
 	
@@ -165,7 +182,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		
 		return $this->cObj->substituteMarkerArrayCached($subpart, $markerArray, $subpartArray);
 	}
-	
+
 	protected function showLogoutSuccess() {
 		$redirectUrl = $this->extConf['logoutHandler'];
 		$redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
