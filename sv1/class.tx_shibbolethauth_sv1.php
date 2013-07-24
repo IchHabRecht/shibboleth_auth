@@ -80,7 +80,8 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			if (TYPO3_MODE == 'FE') {
 				if(stristr($target, '?') === FALSE) $target .= '?';
 				else $target .= '&';
-				$target .= 'logintype=login&pid='.$this->extConf['storagePid'];
+				$pid = t3lib_div::_GP('pid') ? t3lib_div::_GP('pid') : $this->extConf['storagePid'];
+				$target .= 'logintype=login&pid='.$pid;
 			}
 			$redirectUrl = $this->extConf['loginHandler'] . '?target=' . rawurlencode($target);
 			$redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
@@ -94,18 +95,20 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	
 	function getUser() {
 		$user = false;
-		
 		if ($this->login['status']=='login' && $this->isShibbolethLogin() && empty($this->login['uname'])) {
+			if ($this->authInfo['loginType'] == 'FE' && t3lib_div::_GP('auth') != 'shibboleth') return false;
 			$user = $this->fetchUserRecord($this->remoteUser);
 			
 			if(!is_array($user) || empty($user)) {
+				$pid = t3lib_div::_GP('pid') ? t3lib_div::_GP('pid') : $this->extConf['storagePid'];
+				$target .= 'logintype=login&pid='.$pid;
 				if ($this->authInfo['loginType'] == 'FE' && !empty($this->remoteUser) && $this->extConf['enableAutoImport']) {
 					$this->importFEUser();
 				} else {
 					$user = false;
 					// Failed login attempt (no username found)
 					$this->writelog(255,3,3,2,
-						"Login-attempt from %s (%s), username '%s' not found!!",
+						"Login-attempt from %s (%s), username '%s' not found!",
 						Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser));
 					t3lib_div::sysLog(sprintf("Login-attempt from %s (%s), username '%s' not found!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser), $this->extKey, 0);
 				}
@@ -128,7 +131,8 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 					$_procObj->onlyShibbolethFunc($this->remoteUser);
 				}
 			} else {
-				t3lib_BEfunc::typo3printError('Login error', '<h1>User ('.$this->remoteUser.') not found!</h1><h2><a href="'.$this->extConf['logoutHandler'].'">Shibboleth Logout</a></h2>');
+				throw new \RuntimeException('Login error: User ('.$this->remoteUser.') not found!');
+#				t3lib_BEfunc::typo3printError('Login error', '<h1>User ('.$this->remoteUser.') not found!</h1><h2><a href="'.$this->extConf['logoutHandler'].'">Shibboleth Logout</a></h2>');
 			}
 			foreach($_COOKIE as $key=>$val) unset($_COOKIE[$key]);
 			exit;
@@ -205,7 +209,8 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	protected function updateFEUser() {
 		$this->writelog(255,3,3,2,	"Updating user %s!", array($this->remoteUser));
 		
-		$where = "username = '".$this->remoteUser."' AND pid = " . $this->extConf['storagePid'];
+		$pid = t3lib_div::_GP('pid') ? t3lib_div::_GP('pid') : $this->extConf['storagePid'];
+		$where = "username = '".$this->remoteUser."' AND pid = " . $pid;
 
 		// update existing feusergroup with group from Shibboleth
 		$where2 = " AND deleted = 0";

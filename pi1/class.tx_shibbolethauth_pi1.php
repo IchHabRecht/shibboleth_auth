@@ -60,6 +60,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		$this->conf = $conf;
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
+		$this->initPIflexForm();
 		$this->pi_USER_INT_obj = true;	// Configuring so caching is not expected. This value means that no cHash params are ever set. We do this, because it's a USER_INT object!
 		
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
@@ -75,7 +76,6 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		$this->logintype = t3lib_div::_GP('logintype');
 		// Is user logged in?
 		$this->userIsLoggedIn = $GLOBALS['TSFE']->loginUser;
-		
 		// What to display
 		if($this->userIsLoggedIn) {
 			$this->remoteUser = $GLOBALS['TSFE']->fe_user->user['username'];
@@ -88,7 +88,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 			if ($this->logintype == 'logout') {
 				$content = $this->showLogoutSuccess();
 			} else if ($this->logintype == 'login') {
-				$content = $this->pi_getLL('error_message', '', 1);
+				$content = $this->showLoginError();
 			} else {
 				$content = $this->showLogin();
 			}
@@ -130,18 +130,28 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		}
 		if(stristr($target, '?') === FALSE) $target .= '?';
 		else $target .= '&';
-		$target .= 'logintype=login&pid='.$this->extConf['storagePid'];
+		$pid = $this->lConf['page'] ?  $this->lConf['page'] : $this->extConf['storagePid'];
+		$target .= 'logintype=login&auth=shibboleth&pid='.$pid;
 		$redirectUrl = $this->extConf['loginHandler'] . '?target=' . rawurlencode($target);
 		$redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
 		t3lib_utility_Http::redirect($redirectUrl);
 	}
 	
 	protected function showLoginSuccess() {
+		// if set, we redirect to the target page. If you want to show a success message, uncomment the redirect below.
+		if (!empty($this->lConf['redirect'])) {
+			$path = $this->pi_getPageLink($this->lConf['redirect']);
+			$fullUrl = t3lib_div::locationHeaderUrl ( $path );
+			t3lib_utility_Http::redirect($path);
+		}
+		// we redirect to the original page. if you want to show a success message, uncomment the redirect below.
 		$redirectUrl = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
-		$redirectUrl = preg_replace('/[\?|&]logintype=login&pid='.$this->extConf['storagePid'].'/', '', $redirectUrl);
+		$pid = $this->lConf['page'] ?  $this->lConf['page'] : $this->extConf['storagePid'];
+		$redirectUrl = preg_replace('/[\?|&]logintype=login&auth=shibboleth&pid='.$pid.'/', '', $redirectUrl);
 		$redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
 		t3lib_utility_Http::redirect($redirectUrl);
 		
+		// show message for successful login. If you don't uncomment the redirects above, this will never be shown.
 		$subpart = $this->cObj->getSubpart($this->template, '###TEMPLATE_LOGIN_SUCCESS###');
 		
 		$markerArray['###STATUS_HEADER###'] = $this->pi_getLL('success_header', '', 1);
@@ -150,7 +160,17 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		
 		return $this->cObj->substituteMarkerArrayCached($subpart, $markerArray, $subpartArray);
 	}
-	
+
+	protected function showLoginError() {
+		$subpart = $this->cObj->getSubpart($this->template, '###TEMPLATE_LOGIN_ERROR###');
+		
+		$markerArray['###ERROR_HEADER###'] = $this->pi_getLL('error_header', '', 1);
+		$markerArray['###ERROR_MESSAGE###'] = $this->pi_getLL('error_message', '', 1);
+		if (!empty($_SERVER[$this->extConf['remoteUser']])) $markerArray['###ERROR_MESSAGE###'] .= '<br>'.str_replace('###USER###', $this->remoteUser, $this->pi_getLL('wrong_user', '', 1));;
+		
+		return $this->cObj->substituteMarkerArrayCached($subpart, $markerArray, $subpartArray);
+	}
+
 	/**
 	 * Shows logout form
 	 *
@@ -176,7 +196,8 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		$markerArray['###ACTION_URI###'] = htmlspecialchars($this->cObj->typolink_url($this->conf['linkConfig.']));;
 		$markerArray['###LOGOUT_LABEL###'] = $this->pi_getLL('logout', '', 1);
 		$markerArray['###NAME###'] = htmlspecialchars($GLOBALS['TSFE']->fe_user->user['name']);
-		$markerArray['###STORAGE_PID###'] = $this->extConf['storagePid'];
+		$pid = $this->lConf['page'] ?  $this->lConf['page'] : $this->extConf['storagePid'];
+		$markerArray['###STORAGE_PID###'] = $pid;
 		$markerArray['###USERNAME###'] = htmlspecialchars($GLOBALS['TSFE']->fe_user->user['username']);
 		$markerArray['###USERNAME_LABEL###'] = $this->pi_getLL('username', '', 1);
 		
@@ -184,16 +205,17 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 	}
 
 	protected function showLogoutSuccess() {
-		$redirectUrl = $this->extConf['logoutHandler'];
-		$redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
-		t3lib_utility_Http::redirect($redirectUrl);
-		
+		// Redirect if logoutHandler is set.
+		if (!empty($this->extConf['logoutHandler'])) {
+			$redirectUrl = $this->extConf['logoutHandler'];
+			$redirectUrl = t3lib_div::sanitizeLocalUrl($this->extConf['logoutHandler']);
+			t3lib_utility_Http::redirect($redirectUrl);
+		}
+		// Show logout message if no redirect
 		$subpart = $this->cObj->getSubpart($this->template, '###TEMPLATE_LOGOUT_SUCCESS###');
 		
-		$markerArray['###STATUS_HEADER###'] = $this->pi_getLL('logout_header', '', 1);
+		$markerArray['###STATUS_HEADER###'] = $this->pi_getLL('logout', '', 1);
 		$markerArray['###STATUS_MESSAGE###'] = $this->pi_getLL('logout_message', '', 1);
-		$markerArray['###SHIBBOLETH_LOGOUT_TEXT###'] = $this->pi_getLL('shibboleth_logout', '', 1);
-		$markerArray['###SHIBBOLETH_LOGOUT_LINK###'] = '<a href="'.$this->extConf['logoutHandler'].'">' . $this->pi_getLL('logout', '', 1) . '</a>';
 		
 		return $this->cObj->substituteMarkerArrayCached($subpart, $markerArray, $subpartArray);
 	}
@@ -227,6 +249,24 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		}
 		return $params;
 	}
+
+
+	private function initPIflexForm() {
+		$this->pi_initPIflexForm(); // Init and get the flexform data of the plugin
+		$this->lConf = array(); // Setup our storage array...
+		// Assign the flexform data to a local variable for easier access
+		$piFlexForm = $this->cObj->data['pi_flexform'];
+		// Traverse the entire array based on the language...
+		// and assign each configuration option to $this->lConf array...
+		foreach ( $piFlexForm['data'] as $sheet => $data ) {
+			foreach ( $data as $lang => $value ) {
+				foreach ( $value as $key => $val ) {
+					$this->lConf[$key] = $this->pi_getFFvalue($piFlexForm, $key, $sheet);
+				}
+			}
+		}
+	}
+
 }
 
 

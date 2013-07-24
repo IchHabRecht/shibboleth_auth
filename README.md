@@ -1,16 +1,16 @@
 # TYPO3 Extension "shibboleth_auth"
 Shibboleth Single Sign On Authentication (BE & FE). The FE Users will be imported automatically into the configured storage pid.
 
-## Version 2.5.5
+## Version 2.5.6
 
 
 
 
 <table>
-	<tr><td>Version</td><td>2.5.5 stable</td></tr>
-	<tr><td>Release date</td><td>19. July 2013</td></tr>
+	<tr><td>Version</td><td>2.5.6 stable</td></tr>
+	<tr><td>Release date</td><td>24. July 2013</td></tr>
 	<tr><td>Author</td><td>Tamer Erdogan, Richard Rode</td></tr>
-	<tr><td>Comment</td><td>Better manual. Clean up of language files. Settings for additional attributes and default group. Manually assigned groups for fe-users wont be overwritten.</td></tr>
+	<tr><td>Comment</td><td>Storage folder for individual groups. Redirect option. Italian language pack. Shibboleth plugin seperated from felogin functionality.</td></tr>
 </table>
 
 ## !! Attention !!
