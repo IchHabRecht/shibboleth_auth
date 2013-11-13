@@ -2,7 +2,7 @@
 enableBE = 0
 
 # cat=features; type=boolean; label=LLL:EXT:shibboleth_auth/locallang_conf.xml:enableFE
-enableBE = 0
+enableFE = 0
 
 # cat=features; type=boolean; label=LLL:EXT:shibboleth_auth/locallang_conf.xml:enableAutoImport
 enableAutoImport = 0

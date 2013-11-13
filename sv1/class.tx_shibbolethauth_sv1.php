@@ -101,8 +101,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			
 			if(!is_array($user) || empty($user)) {
 				$pid = t3lib_div::_GP('pid') ? t3lib_div::_GP('pid') : $this->extConf['storagePid'];
-				$target .= 'logintype=login&pid='.$pid;
-				if ($this->authInfo['loginType'] == 'FE' && !empty($this->remoteUser) && $this->extConf['enableAutoImport']) {
+				if ($this->authInfo['loginType'] == 'FE' && !empty($this->remoteUser) && $this->extConf['enableAutoImport'] && $pid == $this->extConf['storagePid']) {
 					$this->importFEUser();
 				} else {
 					$user = false;
@@ -200,6 +199,16 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			'name' => $this->getServerVar($this->extConf['displayName']),
 			'usergroup' => $this->getFEUserGroups(),
 			);
+
+		// parse additional attrb
+		if ($this->extConf['additionalAttr'] != null){
+			$additionalAttr = explode(',',$this->extConf['additionalAttr']);
+			foreach ($additionalAttr as $attr) {
+				$attrbCont = explode('=', $attr);
+				$user[$attrbCont[0]] = $this->getServerVar($attrbCont[1]);
+			}
+		}
+		// end of parse
 		$GLOBALS['TYPO3_DB']->exec_INSERTquery($this->authInfo['db_user']['table'], $user);
 	}
 	
