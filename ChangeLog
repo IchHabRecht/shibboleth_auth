@@ -1,3 +1,4 @@
+2.6.0:  Added regex variable to settings to change affiliations before creating FE groups. Compatibility for 6.2.
 2.5.7:  Bugfix: Set additional attributes at import. Name of config variable corrected in ext_conf_template.txt.
 2.5.6:	Storage folder for individual groups. Redirect option. Italian language pack. Shibboleth plugin seperated from felogin functionality.
 2.5.5:	Better manual. Clean up of language files. Settings for additional attributes and default group. Manually assigned groups for fe-users won't be overwritten.

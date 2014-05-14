@@ -15,6 +15,8 @@
 			<label index="onlyShibbolethBE">Only Shibboleth Backend:Enable backend authentication against Shibboleth only.</label>
 			<label index="storagePid">Storage Pid:Global storage folder for frontend users</label>
 			<label index="additionalAttr">Shibboleth Additional Attribute:Server variables that should be imported as fields into the user table. Insert pairs of &quot;field=serverVar&quot; like: first_name=givenName,last_name=sn</label>
+			<label index="RegexPattern">Shibboleth Additional Attribute RegEx Pattern:A RegEx Expression like /replacethis/ig</label>
+			<label index="RegexReplace">Shibboleth Additional Attribute RegEx Replace:String that should replace the matched patterns.</label>
 			<label index="defaultGroup">Shibboleth defaultGroup:If no group is retrieved, this group will be assigned.</label>
 		</languageKey>
 		<languageKey index="de" type="array">
@@ -27,6 +29,8 @@
 			<label index="onlyShibbolethBE">Nur Shibboleth-Backend:Backend-Login nur über Shibboleth erlauben.</label>
 			<label index="storagePid">Storage Pid:Globaler Ordner für Frontend-Benutzer</label>
 			<label index="additionalAttr">Shibboleth Additional Attribute:Server-Variablen, die als Felder in die Benutzer-Tabelle (fe_users) importiert werden sollen. Geben Sie paarweise &quot;field=serverVar&quot; ein, zum Beispiel: first_name=givenName,last_name=sn</label>
+			<label index="RegexPattern">Shibboleth Additional Attribute RegEx Pattern:Ein RegEx-Ausdruck wie /replacethis/ig.</label>
+			<label index="RegexReplace">Shibboleth Additional Attribute RegEx Replace:String, der das Muster ersetzt.</label>
 			<label index="defaultGroup">Shibboleth defaultGroup:Wenn keine Gruppe übergeben wird, wird diese Gruppe zugewiesen.</label>
 		</languageKey>
 		<languageKey index="it" type="array">

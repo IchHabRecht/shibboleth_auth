@@ -23,7 +23,7 @@
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="error_header">Login-Fehler</label>
-			<label index="error_message">Während der Anmeldung ist ein Fehler aufgetreten. Wahrscheinlich haben Sie Ihren Benutzernamen oder das Passwort falsch eingegeben. Vergewissern Sie sich, dass Sie beide Angaben korrekt eingegeben haben - Groß-/Kleinschreibung wird unterschieden. Eine andere Möglichkeit ist, dass Sie eventuell die Cookies in Ihrem Web-Browser deaktiviert haben.</label>
+			<label index="error_message">Während der Anmeldung ist ein Fehler aufgetreten. Möglicherweise sind die Cookies in Ihrem Web-Browser deaktiviert.</label>
 			<label index="wrong_user">Eine andere Möglichkeit ist, dass der Benutzer '###USER###' keinen Zugriff zu den gesperrten Teilen dieser Webseite hat.</label>
 			<label index="cookie_warning">Achtung: Es besteht die Möglichkeit, dass Cookies in Ihrem Browser nicht aktiviert sind! Wenn Ihr Login beim nächsten Klick verschwindet, ist das der Fall und Sie sollten Cookies aktivieren!</label>
 			<label index="success_header">Login erfolgreich</label>

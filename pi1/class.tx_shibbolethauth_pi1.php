@@ -23,9 +23,6 @@
 ***************************************************************/
 
 
-require_once(PATH_tslib.'class.tslib_pibase.php');
-
-
 /**
  * Plugin 'Shibboleth Login' for the 'shibboleth_auth' extension.
  *

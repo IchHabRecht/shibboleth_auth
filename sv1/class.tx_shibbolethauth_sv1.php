@@ -263,12 +263,16 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	protected function getFEUserGroups() {
 		$feGroups = array();
 		$eduPersonAffiliation = $this->getServerVar($this->extConf['eduPersonAffiliation']);
-		if (empty($eduPersonAffiliation)) $eduPersonAffiliation = $this->extConf['defaultGroup'];
-		if (!empty($eduPersonAffiliation)) {
+		if (empty($eduPersonAffiliation)) {
+			$eduPersonAffiliation = $this->extConf['defaultGroup'];
+		} else {
 			$affiliation = explode(';', $eduPersonAffiliation);
-			array_walk($affiliation, create_function('&$v,$k', '$v = preg_replace("/@.*/", "", $v);'));
+			if (!empty($this->extConf['eduPersonAffiliationRegExPattern'])) {
+				array_walk($affiliation, create_function('&$v', '$v = preg_replace("'.$this->extConf['eduPersonAffiliationRegExPattern'].'", "'.$this->extConf['eduPersonAffiliationRegExReplace'].'", $v);'));
+			}
+			array_walk($affiliation, create_function('&$v', '$v = preg_replace("/@.*/", "", $v);'));
 			// parse only cn value
-			array_walk($affiliation, create_function('&$v,$k', 'preg_match("@^(?:cn=)?([^,]+)@i", $v, $matches);$v=$matches[1];'));
+			array_walk($affiliation, create_function('&$v', 'preg_match("@^(?:cn=)?([^,]+)@i", $v, $matches);$v=$matches[1];'));
 
 			// insert the affiliations in fe_groups if they are not there.
 			foreach ($affiliation as $title) {

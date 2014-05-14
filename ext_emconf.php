@@ -3,7 +3,7 @@
 /***************************************************************
  * Extension Manager/Repository config file for ext "shibboleth_auth".
  *
- * Auto generated 10-04-2017 21:33
+ * Auto generated 10-04-2017 21:34
  *
  * Manual updates:
  * Only the data in the array - everything else is removed by next
@@ -14,18 +14,18 @@ $EM_CONF[$_EXTKEY] = array (
 	'title' => 'Shibboleth Authentication',
 	'description' => 'Shibboleth Single Sign On Authentication (BE & FE). The FE Users will be imported automatically into the configured storage pid.',
 	'category' => 'services',
-	'shy' => 0,
-	'version' => '2.5.7',
+	'shy' => true,
+	'version' => '2.6.0',
 	'dependencies' => '',
 	'conflicts' => '',
 	'priority' => '',
 	'loadOrder' => '',
 	'module' => '',
 	'state' => 'stable',
-	'uploadfolder' => 0,
+	'uploadfolder' => true,
 	'createDirs' => '',
 	'modify_tables' => '',
-	'clearcacheonload' => 0,
+	'clearcacheonload' => true,
 	'lockType' => '',
 	'author' => 'Tamer Erdogan, Richard Rode',
 	'author_email' => 'typo3@univie.ac.at',
@@ -36,7 +36,7 @@ $EM_CONF[$_EXTKEY] = array (
 	array (
 		'depends' => 
 		array (
-			'typo3' => '4.0.0-6.1.5',
+			'typo3' => '4.5.0-6.2.999',
 			'' => '',
 		),
 		'conflicts' => 
