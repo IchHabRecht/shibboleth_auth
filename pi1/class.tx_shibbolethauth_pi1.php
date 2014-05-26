@@ -34,12 +34,12 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 	public $prefixId      = 'tx_shibbolethauth_pi1';		// Same as class name
 	public $scriptRelPath = 'pi1/class.tx_shibbolethauth_pi1.php';	// Path to this script relative to the extension dir.
 	public $extKey        = 'shibboleth_auth';	// The extension key.
-	public $pi_checkCHash = false;
-	public $pi_USER_INT_obj = true;
+	public $pi_checkCHash = FALSE;
+	public $pi_USER_INT_obj = TRUE;
 
 	protected $userIsLoggedIn;	// Is user logged in?
 	protected $template;	// holds the template for FE rendering
-	protected $noRedirect = false;	// flag for disable the redirect
+	protected $noRedirect = FALSE;	// flag for disable the redirect
 	protected $logintype;	// logintype (given as GPvar), possible: login, logout
 	public $conf;
 	
@@ -58,7 +58,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
 		$this->initPIflexForm();
-		$this->pi_USER_INT_obj = true;	// Configuring so caching is not expected. This value means that no cHash params are ever set. We do this, because it's a USER_INT object!
+		$this->pi_USER_INT_obj = TRUE;	// Configuring so caching is not expected. This value means that no cHash params are ever set. We do this, because it's a USER_INT object!
 		
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
 		if (empty($this->extConf['remoteUser'])) $this->extConf['remoteUser'] = 'REMOTE_USER';
@@ -163,7 +163,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		
 		$markerArray['###ERROR_HEADER###'] = $this->pi_getLL('error_header', '', 1);
 		$markerArray['###ERROR_MESSAGE###'] = $this->pi_getLL('error_message', '', 1);
-		if (!empty($_SERVER[$this->extConf['remoteUser']])) $markerArray['###ERROR_MESSAGE###'] .= '<br>'.str_replace('###USER###', $this->remoteUser, $this->pi_getLL('wrong_user', '', 1));;
+		if (!empty($_SERVER[$this->extConf['remoteUser']])) $markerArray['###ERROR_MESSAGE###'] .= '<br>'.str_replace('###USER###', $this->remoteUser, $this->pi_getLL('wrong_user', '', 1));
 		
 		return $this->cObj->substituteMarkerArrayCached($subpart, $markerArray, $subpartArray);
 	}
@@ -190,7 +190,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		if ($additionalParams)	{
 			$this->conf['linkConfig.']['additionalParams'] =  $additionalParams;
 		}
-		$markerArray['###ACTION_URI###'] = htmlspecialchars($this->cObj->typolink_url($this->conf['linkConfig.']));;
+		$markerArray['###ACTION_URI###'] = htmlspecialchars($this->cObj->typolink_url($this->conf['linkConfig.']));
 		$markerArray['###LOGOUT_LABEL###'] = $this->pi_getLL('logout', '', 1);
 		$markerArray['###NAME###'] = htmlspecialchars($GLOBALS['TSFE']->fe_user->user['name']);
 		$pid = $this->lConf['page'] ?  $this->lConf['page'] : $this->extConf['storagePid'];
@@ -229,17 +229,19 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		$preserveVars =! ($this->conf['preserveGETvars'] || $this->conf['preserveGETvars']=='all' ? array() : implode(',', (array)$this->conf['preserveGETvars']));
 		$getVars = t3lib_div::_GET();
 
-		foreach ($getVars as $key => $val) {
-			if (stristr($key,$this->prefixId) === false) {
-				if (is_array($val)) {
-					foreach ($val as $key1 => $val1) {
-						if ($this->conf['preserveGETvars'] == 'all' || in_array($key . '[' . $key1 .']', $preserveVars)) {
-							$params .= '&' . $key . '[' . $key1 . ']=' . $val1;
+		if (is_array($getVars)) {
+			foreach ($getVars as $key => $val) {
+				if (stristr($key,$this->prefixId) === FALSE) {
+					if (is_array($val)) {
+						foreach ($val as $key1 => $val1) {
+							if ($this->conf['preserveGETvars'] == 'all' || in_array($key . '[' . $key1 .']', $preserveVars)) {
+								$params .= '&' . $key . '[' . $key1 . ']=' . $val1;
+							}
 						}
-					}
-				} else {
-					if (!in_array($key, array('id','no_cache','logintype','redirect_url','cHash'))) {
-						$params .= '&' . $key . '=' . $val;
+					} else {
+						if (!in_array($key, array('id','no_cache','logintype','redirect_url','cHash'))) {
+							$params .= '&' . $key . '=' . $val;
+						}
 					}
 				}
 			}
@@ -255,10 +257,12 @@ class tx_shibbolethauth_pi1 extends tslib_pibase {
 		$piFlexForm = $this->cObj->data['pi_flexform'];
 		// Traverse the entire array based on the language...
 		// and assign each configuration option to $this->lConf array...
-		foreach ( $piFlexForm['data'] as $sheet => $data ) {
-			foreach ( $data as $lang => $value ) {
-				foreach ( $value as $key => $val ) {
-					$this->lConf[$key] = $this->pi_getFFvalue($piFlexForm, $key, $sheet);
+		if (!empty($piFlexForm) and is_array($piFlexForm['data'])) {
+			foreach ( $piFlexForm['data'] as $sheet => $data ) {
+				foreach ( $data as $lang => $value ) {
+					foreach ( $value as $key => $val ) {
+						$this->lConf[$key] = $this->pi_getFFvalue($piFlexForm, $key, $sheet);
+					}
 				}
 			}
 		}

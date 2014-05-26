@@ -15,6 +15,9 @@ if ($_EXTCONF['enableBE']) {
 	
 	if (TYPO3_MODE == 'BE') {
 		$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_userauth.php']['logoff_post_processing'][] = 'EXT:'.$_EXTKEY.'/hooks/class.tx_shibbolethauth_userauth.php:tx_shibbolethauth_userauth->logoutBE';
+		if ($_EXTCONF['onlyShibbolethBE']) {
+			    $GLOBALS['TYPO3_CONF_VARS']['BE']['showRefreshLoginPopup'] = TRUE;
+		}
 	}
 }
 
@@ -27,7 +30,7 @@ if ($_EXTCONF['enableFE']) {
 	$GLOBALS['TYPO3_CONF_VARS']['SVCONF']['auth']['setup']['FE_fetchUserIfNoSession'] = $_EXTCONF['FE_fetchUserIfNoSession'];
 }
 
-t3lib_extMgm::addService($_EXTKEY, 'auth',  'tx_shibbolethauth_sv1',
+t3lib_extMgm::addService($_EXTKEY, 'auth', 'tx_shibbolethauth_sv1',
 	array(
 		'title' => 'Shibboleth-Authentication',
 		'description' => 'Authentication service for Shibboleth (BE & FE)',

@@ -15,7 +15,7 @@
 			<label index="onlyShibbolethBE">Only Shibboleth Backend:Enable backend authentication against Shibboleth only.</label>
 			<label index="storagePid">Storage Pid:Global storage folder for frontend users</label>
 			<label index="additionalAttr">Shibboleth Additional Attribute:Server variables that should be imported as fields into the user table. Insert pairs of &quot;field=serverVar&quot; like: first_name=givenName,last_name=sn</label>
-			<label index="RegexPattern">Shibboleth Additional Attribute RegEx Pattern:A RegEx Expression like /replacethis/ig</label>
+			<label index="RegexPattern">Shibboleth Additional Attribute RegEx Pattern:A RegEx Expression like /replacethis/i.  See PHP's documentation of the preg_replace function for details.</label>
 			<label index="RegexReplace">Shibboleth Additional Attribute RegEx Replace:String that should replace the matched patterns.</label>
 			<label index="defaultGroup">Shibboleth defaultGroup:If no group is retrieved, this group will be assigned.</label>
 		</languageKey>
@@ -29,7 +29,7 @@
 			<label index="onlyShibbolethBE">Nur Shibboleth-Backend:Backend-Login nur über Shibboleth erlauben.</label>
 			<label index="storagePid">Storage Pid:Globaler Ordner für Frontend-Benutzer</label>
 			<label index="additionalAttr">Shibboleth Additional Attribute:Server-Variablen, die als Felder in die Benutzer-Tabelle (fe_users) importiert werden sollen. Geben Sie paarweise &quot;field=serverVar&quot; ein, zum Beispiel: first_name=givenName,last_name=sn</label>
-			<label index="RegexPattern">Shibboleth Additional Attribute RegEx Pattern:Ein RegEx-Ausdruck wie /replacethis/ig.</label>
+			<label index="RegexPattern">Shibboleth Additional Attribute RegEx Pattern:Ein RegEx-Ausdruck wie /ersetzedas/i. Details finden Sie in der Dokumentation zur PHP-Funktion preg_replace.</label>
 			<label index="RegexReplace">Shibboleth Additional Attribute RegEx Replace:String, der das Muster ersetzt.</label>
 			<label index="defaultGroup">Shibboleth defaultGroup:Wenn keine Gruppe übergeben wird, wird diese Gruppe zugewiesen.</label>
 		</languageKey>
@@ -43,6 +43,8 @@
 			<label index="onlyShibbolethBE">Solo Backend Shibboleth:Se abilitato, permette l'autenticazione al backend solo attraverso Shibboleth.</label>
 			<label index="storagePid">Storage Pid:Il PID della storage folder per gli utenti del frontend</label>
 			<label index="additionalAttr">Shibboleth Additional Attribute:Variabili che dovrebbero essere importate come campi nella tabella utenti. Inserire coppie di &quot;field=serverVar&quot; come: first_name=givenName,last_name=sn</label>
+			<label index="RegexPattern">Shibboleth Additional Attribute RegEx Pattern:Un'espressione regolare come /cambiaquesto/i. Cerca nella documentazione php la funzione preg_replace per maggiori dettagli.</label>
+			<label index="RegexReplace">Shibboleth Additional Attribute RegEx Replace:Stringa che sostituisce il pattern.</label>
 			<label index="defaultGroup">Shibboleth defaultGroup:Se non viene rilevato alcun gruppo, sarà assegnato questo gruppo.</label>
 		</languageKey>
 	</data>

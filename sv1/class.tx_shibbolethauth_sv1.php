@@ -94,9 +94,9 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	}
 	
 	function getUser() {
-		$user = false;
+		$user = FALSE;
 		if ($this->login['status']=='login' && $this->isShibbolethLogin() && empty($this->login['uname'])) {
-			if ($this->authInfo['loginType'] == 'FE' && t3lib_div::_GP('auth') != 'shibboleth') return false;
+			if ($this->authInfo['loginType'] == 'FE' && t3lib_div::_GP('auth') != 'shibboleth') return FALSE;
 			$user = $this->fetchUserRecord($this->remoteUser);
 			
 			if(!is_array($user) || empty($user)) {
@@ -104,9 +104,9 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 				if ($this->authInfo['loginType'] == 'FE' && !empty($this->remoteUser) && $this->extConf['enableAutoImport'] && $pid == $this->extConf['storagePid']) {
 					$this->importFEUser();
 				} else {
-					$user = false;
+					$user = FALSE;
 					// Failed login attempt (no username found)
-					$this->writelog(255,3,3,2,
+					$this->writelog(255, 3, 3, 2,
 						"Login-attempt from %s (%s), username '%s' not found!",
 						Array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser));
 					t3lib_div::sysLog(sprintf("Login-attempt from %s (%s), username '%s' not found!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser), $this->extKey, 0);
@@ -131,7 +131,6 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 				}
 			} else {
 				throw new \RuntimeException('Login error: User ('.$this->remoteUser.') not found!');
-#				t3lib_BEfunc::typo3printError('Login error', '<h1>User ('.$this->remoteUser.') not found!</h1><h2><a href="'.$this->extConf['logoutHandler'].'">Shibboleth Logout</a></h2>');
 			}
 			foreach($_COOKIE as $key=>$val) unset($_COOKIE[$key]);
 			exit;
@@ -165,7 +164,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			if ($user['lockToDomain'] && $user['lockToDomain']!=$this->authInfo['HTTP_HOST']) {
 				// Lock domain didn't match, so error:
 				if ($this->writeAttemptLog) {
-					$this->writelog(255,3,3,1,
+					$this->writelog(255, 3, 3, 1,
 						"Login-attempt from %s (%s), username '%s', locked domain '%s' did not match '%s'!",
 						array($this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $user[$this->authInfo['db_user']['username_column']], $user['lockToDomain'], $this->authInfo['HTTP_HOST']));
 					t3lib_div::sysLog(sprintf( "Login-attempt from %s (%s), username '%s', locked domain '%s' did not match '%s'!",
@@ -176,7 +175,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 		} else {
 			// Failed login attempt (wrong password) - write that to the log!
 			if ($this->writeAttemptLog) {
-				$this->writelog(255,3,3,1,
+				$this->writelog(255, 3, 3, 1,
 					"Login-attempt from %s (%s), username '%s', password not accepted!",
 					array($this->info['REMOTE_ADDR'], $this->info['REMOTE_HOST'], $this->remoteUser));
 				t3lib_div::sysLog(sprintf("Login-attempt from %s (%s), username '%s', password not accepted!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser), $this->extKey, 0 );
@@ -188,21 +187,21 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	}
 	
 	protected function importFEUser() {
-		$this->writelog(255,3,3,2, "Importing user %s!", array($this->remoteUser));
+		$this->writelog(255, 3, 3, 2, "Importing user %s!", array($this->remoteUser));
 		
 		$user = array('crdate' => time(),
 			'tstamp' => time(),
 			'pid' => $this->extConf['storagePid'],
 			'username' => $this->remoteUser,
-			'password' => md5(t3lib_div::shortMD5(uniqid(rand(), true))),
+			'password' => md5(t3lib_div::shortMD5(uniqid(rand(), TRUE))),
 			'email' => $this->getServerVar($this->extConf['mail']),
 			'name' => $this->getServerVar($this->extConf['displayName']),
 			'usergroup' => $this->getFEUserGroups(),
 			);
 
 		// parse additional attrb
-		if ($this->extConf['additionalAttr'] != null){
-			$additionalAttr = explode(',',$this->extConf['additionalAttr']);
+		if ($this->extConf['additionalAttr'] != NULL){
+			$additionalAttr = explode(',', $this->extConf['additionalAttr']);
 			foreach ($additionalAttr as $attr) {
 				$attrbCont = explode('=', $attr);
 				$user[$attrbCont[0]] = $this->getServerVar($attrbCont[1]);
@@ -216,14 +215,14 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	 * @return	boolean
 	 */
 	protected function updateFEUser() {
-		$this->writelog(255,3,3,2,	"Updating user %s!", array($this->remoteUser));
+		$this->writelog(255, 3, 3, 2, "Updating user %s!", array($this->remoteUser));
 		
 		$pid = t3lib_div::_GP('pid') ? t3lib_div::_GP('pid') : $this->extConf['storagePid'];
 		$where = "username = '".$this->remoteUser."' AND pid = " . $pid;
 
 		// update existing feusergroup with group from Shibboleth
-		$where2 = " AND deleted = 0";
-		$dbres2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('usergroup',$this->authInfo['db_user']['table'],$where.$where2);
+		$where2 = ' AND deleted = 0';
+		$dbres2 = $GLOBALS['TYPO3_DB']->exec_SELECTquery('usergroup', $this->authInfo['db_user']['table'],$where.$where2);
 		if ($row2 = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($dbres2)) {
 			$currentGroups = $row2['usergroup'];
 		}
@@ -242,15 +241,15 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 
 		$user = array('tstamp' => time(),
 			'username' => $this->remoteUser,
-			'password' => t3lib_div::shortMD5(uniqid(rand(), true)),
+			'password' => t3lib_div::shortMD5(uniqid(rand(), TRUE)),
 			'email' => $this->getServerVar($this->extConf['mail']),
 			'name' => $this->getServerVar($this->extConf['displayName']),
 			'usergroup' => $newGroups,
 			);
 
 		// parse additional attrb
-		if ($this->extConf['additionalAttr'] != null){
-			$additionalAttr = explode(',',$this->extConf['additionalAttr']);
+		if ($this->extConf['additionalAttr'] != NULL){
+			$additionalAttr = explode(',', $this->extConf['additionalAttr']);
 			foreach ($additionalAttr as $attr) {
 				$attrbCont = explode('=', $attr);
 				$user[$attrbCont[0]] = $this->getServerVar($attrbCont[1]);
@@ -278,7 +277,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			foreach ($affiliation as $title) {
 				$dbres = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid, title',
 					$this->authInfo['db_groups']['table'],
-					"deleted = 0 AND pid = ".$this->extConf['storagePid'] . " AND title = '$title'");
+					'deleted = 0 AND pid = '.$this->extConf['storagePid'] . " AND title = '$title'");
 				if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($dbres)) {
 					$feGroups[] = $row['uid'];
 				} else {
@@ -320,7 +319,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 				}
 			}
 		}
-		return null;
+		return NULL;
 	}
 }
 
