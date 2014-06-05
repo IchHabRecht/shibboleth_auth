@@ -1,3 +1,4 @@
+2.6.2:	Added option onlyAffiliationGroups: Manually added or deprecated group assignments will be removed if user misses according affiliation.
 2.6.1:	Fixed session timeout behaviour with showRefreshLoginPopup.
 2.6.0:  Added regex variable to settings to change affiliations before creating FE groups. Compatibility for 6.2.
 2.5.7:  Bugfix: Set additional attributes at import. Name of config variable corrected in ext_conf_template.txt.

@@ -45,6 +45,11 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 	 * @return	void
 	 */
 	function init() {
+##### DUMMY!!!
+	$_SERVER['AUTH_TYPE'] = 'shibboleth';
+	$_SERVER['REMOTE_USER'] = 'admin';
+	$_SERVER['affiliation'] = 'staff@univie.ac.at';
+##### REMOVE THIS!!!
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf'][$this->extKey]);
 		if (empty($this->extConf['remoteUser'])) $this->extConf['remoteUser'] = 'REMOTE_USER';
 		$this->remoteUser = $_SERVER[$this->extConf['remoteUser']];
@@ -230,11 +235,24 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 		$currentGroupsA = explode(',', $currentGroups);
 		$retGroupsA = explode(',', $this->getFEUserGroups());
 		foreach ($retGroupsA as $rg) {
-			$isExist = 0;
-			foreach ($currentGroupsA as $cg) {
-				if ($rg == $cg) $isExist = 1;
+			if (!in_array($rg, $currentGroupsA)) $currentGroupsA[] = $rg;
+		}
+		if ($this->extConf['onlyAffiliationGroups']) {
+			// remove all groups from shibboleth folder, that are not in the affiliations anymore
+			if ($pid !=  $this->extConf['storagePid']) {
+				$dbres3 =  $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid','fe_groups', "uid IN ($currentGroups) and pid=".$this->extConf['storagePid']);
+				$shibgroups = array();
+				while ($row3 = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($dbres3)) {
+					$shibgroups[] = $row3['uid'];
+				}
+				foreach ($currentGroupsA as $key=>$cg) {
+					if (!in_array($cg, $retGroupsA) and in_array($cg, $shibgroups)) unset($currentGroupsA[$key]);
+				}
+			} else {
+				foreach ($currentGroupsA as $key=>$cg) {
+					if (!in_array($cg, $retGroupsA)) unset($currentGroupsA[$key]);
+				}
 			}
-			if (!$isExist) $currentGroupsA[] = $rg;
 		}
 		$newGroups = implode(',', $currentGroupsA);
 		// end of update feusergroup

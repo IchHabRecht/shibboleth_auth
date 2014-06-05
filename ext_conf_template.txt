@@ -19,7 +19,10 @@ enableAutoImport = 0
 # cat=features//7; type=int+; label=LLL:EXT:shibboleth_auth/locallang_conf.xml:storagePid
 storagePid = 0
 
-# cat=features//8; type=boolean; label=LLL:EXT:shibboleth_auth/locallang_conf.xml:forceSSL
+# cat=features//8; type=boolean; label=LLL:EXT:shibboleth_auth/locallang_conf.xml:onlyAffiliationGroups
+onlyAffiliationGroups = 0
+
+# cat=features//9; type=boolean; label=LLL:EXT:shibboleth_auth/locallang_conf.xml:forceSSL
 forceSSL = 1
 
 # cat=shibboleth//1; type=int+; label=Auth Priority:maximum 100
