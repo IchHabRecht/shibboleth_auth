@@ -1,16 +1,16 @@
 # TYPO3 Extension "shibboleth_auth"
 Shibboleth Single Sign On Authentication (BE & FE). The FE Users will be imported automatically into the configured storage pid.
 
-## Version 2.6.2
+## Version 2.6.3
 
 
 
 
 <table>
-	<tr><td>Version</td><td>2.6.2 stable</td></tr>
-	<tr><td>Release date</td><td>05. June 2014</td></tr>
+	<tr><td>Version</td><td>2.6.3 stable</td></tr>
+	<tr><td>Release date</td><td>12. June 2014</td></tr>
 	<tr><td>Author</td><td>Tamer Erdogan, Richard Rode</td></tr>
-	<tr><td>Comment</td><td>Added option onlyAffiliationGroups: Manually added or deprecated group assignments will be removed if user misses according affiliation.</td></tr>
+	<tr><td>Comment</td><td>Removed bug with auto login</td></tr>
 </table>
 
 ## !! Attention !!
