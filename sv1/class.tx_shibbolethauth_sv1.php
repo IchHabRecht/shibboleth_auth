@@ -290,7 +290,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase {
 			foreach ($affiliation as $title) {
 				$dbres = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid, title',
 					$this->authInfo['db_groups']['table'],
-					"'deleted = 0 AND pid = '".intval($this->extConf['storagePid']) . "' AND title = '".$GLOBALS['TYPO3_DB']->quoteStr($title, $this->authInfo['db_groups']['table'])."'");
+					"deleted = 0 AND pid = '".intval($this->extConf['storagePid']) . "' AND title = '".$GLOBALS['TYPO3_DB']->quoteStr($title, $this->authInfo['db_groups']['table'])."'");
 				if ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($dbres)) {
 					$feGroups[] = $row['uid'];
 				} else {
