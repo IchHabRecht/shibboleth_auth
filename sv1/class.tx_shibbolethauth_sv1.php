@@ -275,8 +275,8 @@ class tx_shibbolethauth_sv1 extends AbstractAuthenticationService
         if ($dbres2) {
             $GLOBALS['TYPO3_DB']->sql_free_result($dbres2);
         }
-        $currentGroupsA = explode(',', $currentGroups);
-        $retGroupsA = explode(',', $this->getFEUserGroups());
+        $currentGroupsA = TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $currentGroups, true);
+        $retGroupsA = TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',', $this->getFEUserGroups(), true);
         foreach ($retGroupsA as $rg) {
             if (!in_array($rg, $currentGroupsA)) {
                 $currentGroupsA[] = $rg;
