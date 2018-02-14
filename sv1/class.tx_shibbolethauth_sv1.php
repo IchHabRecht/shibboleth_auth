@@ -42,7 +42,7 @@ class tx_shibbolethauth_sv1 extends AbstractAuthenticationService
     /**
      * Inits some variables
      *
-     * @return	void
+     * @return bool
      */
     public function init()
     {
@@ -71,7 +71,8 @@ class tx_shibbolethauth_sv1 extends AbstractAuthenticationService
     public function initAuth($mode, $loginData, $authInfo, $pObj)
     {
         if (defined('TYPO3_cliMode')) {
-            return parent::initAuth($mode, $loginData, $authInfo, $pObj);
+            parent::initAuth($mode, $loginData, $authInfo, $pObj);
+            return;
         }
 
         $this->login = $loginData;

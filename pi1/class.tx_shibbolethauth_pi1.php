@@ -49,9 +49,9 @@ class tx_shibbolethauth_pi1 extends AbstractPlugin
     /**
      * The main method of the PlugIn
      *
-     * @param	string		$content: The PlugIn content
-     * @param	array		$conf: The PlugIn configuration
-     * @return	The content that is displayed on the website
+     * @param string $content: The PlugIn content
+     * @param array $conf: The PlugIn configuration
+     * @return string The content that is displayed on the website
      */
     public function main($content, $conf)
     {
