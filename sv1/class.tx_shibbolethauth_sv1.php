@@ -79,7 +79,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase
             if ($this->extConf['forceSSL'] && !\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL')) {
                 $target = str_ireplace('http:', 'https:', $target);
                 if (!preg_match('#["<>\\\]+#', $target)) {
-                    t3lib_utility_Http::redirect($target);
+                    \TYPO3\CMS\Core\Utility\HttpUtility::redirect($target);
                 }
             }
 
@@ -95,7 +95,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase
             $redirectUrl = $this->extConf['loginHandler'] . '?target=' . rawurlencode($target);
             $redirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($redirectUrl);
 
-            t3lib_utility_Http::redirect($redirectUrl);
+            \TYPO3\CMS\Core\Utility\HttpUtility::redirect($redirectUrl);
         } else {
             $loginData['status'] = 'login';
             parent::initAuth($mode, $loginData, $authInfo, $pObj);

@@ -105,7 +105,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase
             if (!$GLOBALS['TSFE']->fe_user->cookieId) {
                 $content .= $this->cObj->stdWrap($this->pi_getLL('cookie_warning', '', 1), $this->conf['cookieWarning_stdWrap.']);
             } else {
-                t3lib_utility_Http::redirect($this->redirectUrl);
+                \TYPO3\CMS\Core\Utility\HttpUtility::redirect($this->redirectUrl);
             }
         }
 
@@ -124,7 +124,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase
         if ($this->extConf['forceSSL'] && !\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL')) {
             $target = str_ireplace('http:', 'https:', $target);
             if (!preg_match('#["<>\\\]+#', $target)) {
-                t3lib_utility_Http::redirect($target);
+                \TYPO3\CMS\Core\Utility\HttpUtility::redirect($target);
             }
         }
         if (stristr($target, '?') === false) {
@@ -136,7 +136,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase
         $target .= 'logintype=login&auth=shibboleth&pid=' . $pid;
         $redirectUrl = $this->extConf['loginHandler'] . '?target=' . rawurlencode($target);
         $redirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($redirectUrl);
-        t3lib_utility_Http::redirect($redirectUrl);
+        \TYPO3\CMS\Core\Utility\HttpUtility::redirect($redirectUrl);
     }
 
     protected function showLoginSuccess()
@@ -145,14 +145,14 @@ class tx_shibbolethauth_pi1 extends tslib_pibase
         if (!empty($this->lConf['redirect'])) {
             $path = $this->pi_getPageLink($this->lConf['redirect']);
             $fullUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::locationHeaderUrl($path);
-            t3lib_utility_Http::redirect($path);
+            \TYPO3\CMS\Core\Utility\HttpUtility::redirect($path);
         }
         // we redirect to the original page. if you want to show a success message, uncomment the redirect below.
         $redirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL');
         $pid = $this->lConf['page'] ? $this->lConf['page'] : $this->extConf['storagePid'];
         $redirectUrl = preg_replace('/[\?|&]logintype=login&auth=shibboleth&pid=' . $pid . '/', '', $redirectUrl);
         $redirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($redirectUrl);
-        t3lib_utility_Http::redirect($redirectUrl);
+        \TYPO3\CMS\Core\Utility\HttpUtility::redirect($redirectUrl);
 
         // show message for successful login. If you don't uncomment the redirects above, this will never be shown.
         $subpart = $this->cObj->getSubpart($this->template, '###TEMPLATE_LOGIN_SUCCESS###');
@@ -217,7 +217,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase
         if (!empty($this->extConf['logoutHandler'])) {
             $redirectUrl = $this->extConf['logoutHandler'];
             $redirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($this->extConf['logoutHandler']);
-            t3lib_utility_Http::redirect($redirectUrl);
+            \TYPO3\CMS\Core\Utility\HttpUtility::redirect($redirectUrl);
         }
         // Show logout message if no redirect
         $subpart = $this->cObj->getSubpart($this->template, '###TEMPLATE_LOGOUT_SUCCESS###');
