@@ -25,12 +25,12 @@ if ($_EXTCONF['enableFE']) {
     $subTypes[] = 'getUserFE';
     $subTypes[] = 'authUserFE';
 
-    t3lib_extMgm::addPItoST43($_EXTKEY, 'pi1/class.tx_shibbolethauth_pi1.php', '_pi1', 'list_type', 0);
+    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPItoST43($_EXTKEY, 'pi1/class.tx_shibbolethauth_pi1.php', '_pi1', 'list_type', 0);
 
     $GLOBALS['TYPO3_CONF_VARS']['SVCONF']['auth']['setup']['FE_fetchUserIfNoSession'] = $_EXTCONF['FE_fetchUserIfNoSession'];
 }
 
-t3lib_extMgm::addService(
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addService(
     $_EXTKEY,
     'auth',
     'tx_shibbolethauth_sv1',
@@ -47,7 +47,7 @@ t3lib_extMgm::addService(
         'os' => '',
         'exec' => '',
 
-        'classFile' => t3lib_extMgm::extPath($_EXTKEY) . 'sv1/class.tx_shibbolethauth_sv1.php',
+        'classFile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY) . 'sv1/class.tx_shibbolethauth_sv1.php',
         'className' => 'tx_shibbolethauth_sv1',
     ]
 );
