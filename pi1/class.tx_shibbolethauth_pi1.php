@@ -22,12 +22,14 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+use TYPO3\CMS\Frontend\Plugin\AbstractPlugin;
+
 /**
  * Plugin 'Shibboleth Login' for the 'shibboleth_auth' extension.
  *
  * @author	Mag. Tamer Erdogan <tamer.erdogan@univie.ac.at>
  */
-class tx_shibbolethauth_pi1 extends tslib_pibase
+class tx_shibbolethauth_pi1 extends AbstractPlugin
 {
     public $prefixId = 'tx_shibbolethauth_pi1';		// Same as class name
     public $scriptRelPath = 'pi1/class.tx_shibbolethauth_pi1.php';	// Path to this script relative to the extension dir.
