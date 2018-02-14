@@ -22,12 +22,14 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+use TYPO3\CMS\Sv\AbstractAuthenticationService;
+
 /**
  * Service "Shibboleth-Authentication" for the "tx_shibbolethauth" extension.
  *
  * @author	Tamer Erdoğan <tamer.erdogan@univie.ac.at>
  */
-class tx_shibbolethauth_sv1 extends tx_sv_authbase
+class tx_shibbolethauth_sv1 extends AbstractAuthenticationService
 {
     public $prefixId = 'tx_shibbolethauth_sv1';		// Same as class name
     public $scriptRelPath = 'sv1/class.tx_shibbolethauth_sv1.php';	// Path to this script relative to the extension dir.
