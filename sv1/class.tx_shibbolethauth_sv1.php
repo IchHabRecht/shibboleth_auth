@@ -70,6 +70,8 @@ class tx_shibbolethauth_sv1 extends AbstractAuthenticationService
      */
     public function initAuth($mode, $loginData, $authInfo, $pObj)
     {
+        $authInfo['db_user']['checkPidList'] = $this->extConf['storagePid'];
+        $authInfo['db_user']['check_pid_clause'] = ' AND pid=' . (int)$this->extConf['storagePid'];
         if (defined('TYPO3_cliMode')) {
             parent::initAuth($mode, $loginData, $authInfo, $pObj);
             return;
