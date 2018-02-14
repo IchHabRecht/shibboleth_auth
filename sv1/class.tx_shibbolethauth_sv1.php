@@ -239,8 +239,8 @@ class tx_shibbolethauth_sv1 extends AbstractAuthenticationService
             'pid' => $this->extConf['storagePid'],
             'username' => $this->remoteUser,
             'password' => md5(\TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5(uniqid(rand(), true))),
-            'email' => $this->getServerVar($this->extConf['mail']),
-            'name' => $this->getServerVar($this->extConf['displayName']),
+            'email' => $this->getServerVar($this->extConf['mail']) ?? '',
+            'name' => $this->getServerVar($this->extConf['displayName']) ?? '',
             'usergroup' => $this->getFEUserGroups(),
             ];
 
@@ -249,7 +249,7 @@ class tx_shibbolethauth_sv1 extends AbstractAuthenticationService
             $additionalAttr = explode(',', $this->extConf['additionalAttr']);
             foreach ($additionalAttr as $attr) {
                 $attrbCont = explode('=', $attr);
-                $user[$attrbCont[0]] = $this->getServerVar($attrbCont[1]);
+                $user[$attrbCont[0]] = $this->getServerVar($attrbCont[1]) ?? '';
             }
         }
         // end of parse
