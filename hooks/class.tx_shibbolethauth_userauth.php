@@ -22,26 +22,20 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-
 /**
  * Service "Shibboleth-Authentication" for the "shibboleth_auth" extension.
  *
  * @author	Tamer Erdoğan <tamer.erdogan@univie.ac.at>
- * @package	TYPO3
- * @subpackage	tx_shibbolethauth
  */
-class tx_shibbolethauth_userauth {
-	
-	public function logoutBE() {
-		$_EXTCONF = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['shibboleth_auth']);
-		$_GET['redirect'] = $_EXTCONF['logoutHandler'];
-	}
+class tx_shibbolethauth_userauth
+{
+    public function logoutBE()
+    {
+        $_EXTCONF = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['shibboleth_auth']);
+        $_GET['redirect'] = $_EXTCONF['logoutHandler'];
+    }
 }
 
-
-
-if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/shibboleth_auth/hooks/class.tx_shibbolethauth_userauth.php'])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/shibboleth_auth/hooks/class.tx_shibbolethauth_userauth.php']);
+if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/shibboleth_auth/hooks/class.tx_shibbolethauth_userauth.php']) {
+    include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/shibboleth_auth/hooks/class.tx_shibbolethauth_userauth.php']);
 }
-
-?>
