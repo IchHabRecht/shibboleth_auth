@@ -74,9 +74,9 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase
 
         $this->login = $loginData;
         if (empty($this->login['uname']) && empty($this->remoteUser)) {
-            $target = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
-            $target = t3lib_div::removeXSS($target);
-            if ($this->extConf['forceSSL'] && !t3lib_div::getIndpEnv('TYPO3_SSL')) {
+            $target = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL');
+            $target = \TYPO3\CMS\Core\Utility\GeneralUtility::removeXSS($target);
+            if ($this->extConf['forceSSL'] && !\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL')) {
                 $target = str_ireplace('http:', 'https:', $target);
                 if (!preg_match('#["<>\\\]+#', $target)) {
                     t3lib_utility_Http::redirect($target);
@@ -89,11 +89,11 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase
                 } else {
                     $target .= '&';
                 }
-                $pid = t3lib_div::_GP('pid') ? t3lib_div::_GP('pid') : $this->extConf['storagePid'];
+                $pid = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('pid') ? \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('pid') : $this->extConf['storagePid'];
                 $target .= 'logintype=login&pid=' . $pid;
             }
             $redirectUrl = $this->extConf['loginHandler'] . '?target=' . rawurlencode($target);
-            $redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
+            $redirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($redirectUrl);
 
             t3lib_utility_Http::redirect($redirectUrl);
         } else {
@@ -106,13 +106,13 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase
     {
         $user = false;
         if ($this->login['status'] == 'login' && $this->isShibbolethLogin() && empty($this->login['uname'])) {
-            if ($this->authInfo['loginType'] == 'FE' && t3lib_div::_GP('auth') != 'shibboleth') {
+            if ($this->authInfo['loginType'] == 'FE' && \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('auth') != 'shibboleth') {
                 return false;
             }
             $user = $this->fetchUserRecord($this->remoteUser);
 
             if (!is_array($user) || empty($user)) {
-                $pid = t3lib_div::_GP('pid') ? t3lib_div::_GP('pid') : $this->extConf['storagePid'];
+                $pid = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('pid') ? \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('pid') : $this->extConf['storagePid'];
                 if ($this->authInfo['loginType'] == 'FE' && !empty($this->remoteUser) && $this->extConf['enableAutoImport'] && $pid == $this->extConf['storagePid']) {
                     $this->importFEUser();
                 } else {
@@ -126,14 +126,14 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase
                         "Login-attempt from %s (%s), username '%s' not found!",
                         [$this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser]
                     );
-                    t3lib_div::sysLog(sprintf("Login-attempt from %s (%s), username '%s' not found!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser), $this->extKey, 0);
+                    \TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(sprintf("Login-attempt from %s (%s), username '%s' not found!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser), $this->extKey, 0);
                 }
             } else {
                 if ($this->authInfo['loginType'] == 'FE' && $this->extConf['enableAutoImport']) {
                     $this->updateFEUser();
                 }
                 if ($this->writeDevLog) {
-                    t3lib_div::devLog('User found: ' . t3lib_div::arrayToLogString($user, [$this->db_user['userid_column'], $this->db_user['username_column']]), $this->extKey);
+                    \TYPO3\CMS\Core\Utility\GeneralUtility::devLog('User found: ' . \TYPO3\CMS\Core\Utility\GeneralUtility::arrayToLogString($user, [$this->db_user['userid_column'], $this->db_user['username_column']]), $this->extKey);
                 }
             }
             if ($this->authInfo['loginType'] == 'FE') {
@@ -145,7 +145,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase
         if (!defined('TYPO3_cliMode') && $this->authInfo['loginType'] == 'BE' && $this->extConf['onlyShibbolethBE'] && empty($user)) {
             if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['onlyShibbolethFunc'])) {
                 foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['onlyShibbolethFunc'] as $_classRef) {
-                    $_procObj = & t3lib_div::getUserObj($_classRef);
+                    $_procObj = & \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($_classRef);
                     $_procObj->onlyShibbolethFunc($this->remoteUser);
                 }
             } else {
@@ -195,7 +195,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase
                         "Login-attempt from %s (%s), username '%s', locked domain '%s' did not match '%s'!",
                         [$this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $user[$this->authInfo['db_user']['username_column']], $user['lockToDomain'], $this->authInfo['HTTP_HOST']]
                     );
-                    t3lib_div::sysLog(sprintf(
+                    \TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(sprintf(
                         "Login-attempt from %s (%s), username '%s', locked domain '%s' did not match '%s'!",
                         $this->authInfo['REMOTE_ADDR'],
                         $this->authInfo['REMOTE_HOST'],
@@ -217,7 +217,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase
                     "Login-attempt from %s (%s), username '%s', password not accepted!",
                     [$this->info['REMOTE_ADDR'], $this->info['REMOTE_HOST'], $this->remoteUser]
                 );
-                t3lib_div::sysLog(sprintf("Login-attempt from %s (%s), username '%s', password not accepted!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser), $this->extKey, 0);
+                \TYPO3\CMS\Core\Utility\GeneralUtility::sysLog(sprintf("Login-attempt from %s (%s), username '%s', password not accepted!", $this->authInfo['REMOTE_ADDR'], $this->authInfo['REMOTE_HOST'], $this->remoteUser), $this->extKey, 0);
             }
             $OK = 0;
         }
@@ -233,7 +233,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase
             'tstamp' => time(),
             'pid' => $this->extConf['storagePid'],
             'username' => $this->remoteUser,
-            'password' => md5(t3lib_div::shortMD5(uniqid(rand(), true))),
+            'password' => md5(\TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5(uniqid(rand(), true))),
             'email' => $this->getServerVar($this->extConf['mail']),
             'name' => $this->getServerVar($this->extConf['displayName']),
             'usergroup' => $this->getFEUserGroups(),
@@ -258,7 +258,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase
     {
         $this->writelog(255, 3, 3, 2, 'Updating user %s!', [$this->remoteUser]);
 
-        $pid = t3lib_div::_GP('pid') ? t3lib_div::_GP('pid') : $this->extConf['storagePid'];
+        $pid = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('pid') ? \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('pid') : $this->extConf['storagePid'];
         $where = "username = '" . $GLOBALS['TYPO3_DB']->quoteStr($this->remoteUser, $this->authInfo['db_user']['table']) . "' AND pid = '" . intval($pid) . "'";
 
         // update existing feusergroup with group from Shibboleth
@@ -303,7 +303,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase
 
         $user = ['tstamp' => time(),
             'username' => $this->remoteUser,
-            'password' => t3lib_div::shortMD5(uniqid(rand(), true)),
+            'password' => \TYPO3\CMS\Core\Utility\GeneralUtility::shortMD5(uniqid(rand(), true)),
             'email' => $this->getServerVar($this->extConf['mail']),
             'name' => $this->getServerVar($this->extConf['displayName']),
             'usergroup' => $newGroups,
@@ -359,7 +359,7 @@ class tx_shibbolethauth_sv1 extends tx_sv_authbase
         // Hook for any additional fe_groups
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['getFEUserGroups'])) {
             foreach ($GLOBALS['TYPO3_CONF_VARS']['EXTCONF'][$this->extKey]['getFEUserGroups'] as $_classRef) {
-                $_procObj = & t3lib_div::getUserObj($_classRef);
+                $_procObj = & \TYPO3\CMS\Core\Utility\GeneralUtility::getUserObj($_classRef);
                 $feGroups = $_procObj->getFEUserGroups($feGroups);
             }
         }

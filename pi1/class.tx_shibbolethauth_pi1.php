@@ -71,7 +71,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase
         $this->template = $this->cObj->fileResource($templateFile);
 
         // GPvars:
-        $this->logintype = t3lib_div::_GP('logintype');
+        $this->logintype = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('logintype');
         // Is user logged in?
         $this->userIsLoggedIn = $GLOBALS['TSFE']->loginUser;
         // What to display
@@ -93,11 +93,11 @@ class tx_shibbolethauth_pi1 extends tslib_pibase
         }
 
         // Redirect Status
-        $returnUrl = t3lib_div::_GP('return_url');
+        $returnUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('return_url');
         if ($returnUrl) {
             $this->redirectUrl = $returnUrl;
         } else {
-            $this->redirectUrl = t3lib_div::_GP('redirect_url');
+            $this->redirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::_GP('redirect_url');
         }
 
         // Process Redirect
@@ -119,9 +119,9 @@ class tx_shibbolethauth_pi1 extends tslib_pibase
      */
     protected function showLogin()
     {
-        $target = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
-        $target = t3lib_div::removeXSS($target);
-        if ($this->extConf['forceSSL'] && !t3lib_div::getIndpEnv('TYPO3_SSL')) {
+        $target = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL');
+        $target = \TYPO3\CMS\Core\Utility\GeneralUtility::removeXSS($target);
+        if ($this->extConf['forceSSL'] && !\TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_SSL')) {
             $target = str_ireplace('http:', 'https:', $target);
             if (!preg_match('#["<>\\\]+#', $target)) {
                 t3lib_utility_Http::redirect($target);
@@ -135,7 +135,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase
         $pid = $this->lConf['page'] ? $this->lConf['page'] : $this->extConf['storagePid'];
         $target .= 'logintype=login&auth=shibboleth&pid=' . $pid;
         $redirectUrl = $this->extConf['loginHandler'] . '?target=' . rawurlencode($target);
-        $redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
+        $redirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($redirectUrl);
         t3lib_utility_Http::redirect($redirectUrl);
     }
 
@@ -144,14 +144,14 @@ class tx_shibbolethauth_pi1 extends tslib_pibase
         // if set, we redirect to the target page. If you want to show a success message, uncomment the redirect below.
         if (!empty($this->lConf['redirect'])) {
             $path = $this->pi_getPageLink($this->lConf['redirect']);
-            $fullUrl = t3lib_div::locationHeaderUrl($path);
+            $fullUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::locationHeaderUrl($path);
             t3lib_utility_Http::redirect($path);
         }
         // we redirect to the original page. if you want to show a success message, uncomment the redirect below.
-        $redirectUrl = t3lib_div::getIndpEnv('TYPO3_REQUEST_URL');
+        $redirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::getIndpEnv('TYPO3_REQUEST_URL');
         $pid = $this->lConf['page'] ? $this->lConf['page'] : $this->extConf['storagePid'];
         $redirectUrl = preg_replace('/[\?|&]logintype=login&auth=shibboleth&pid=' . $pid . '/', '', $redirectUrl);
-        $redirectUrl = t3lib_div::sanitizeLocalUrl($redirectUrl);
+        $redirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($redirectUrl);
         t3lib_utility_Http::redirect($redirectUrl);
 
         // show message for successful login. If you don't uncomment the redirects above, this will never be shown.
@@ -216,7 +216,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase
         // Redirect if logoutHandler is set.
         if (!empty($this->extConf['logoutHandler'])) {
             $redirectUrl = $this->extConf['logoutHandler'];
-            $redirectUrl = t3lib_div::sanitizeLocalUrl($this->extConf['logoutHandler']);
+            $redirectUrl = \TYPO3\CMS\Core\Utility\GeneralUtility::sanitizeLocalUrl($this->extConf['logoutHandler']);
             t3lib_utility_Http::redirect($redirectUrl);
         }
         // Show logout message if no redirect
@@ -239,7 +239,7 @@ class tx_shibbolethauth_pi1 extends tslib_pibase
     {
         $params = '';
         $preserveVars = ! ($this->conf['preserveGETvars'] || $this->conf['preserveGETvars'] == 'all' ? [] : implode(',', (array)$this->conf['preserveGETvars']));
-        $getVars = t3lib_div::_GET();
+        $getVars = \TYPO3\CMS\Core\Utility\GeneralUtility::_GET();
 
         if (is_array($getVars)) {
             foreach ($getVars as $key => $val) {
