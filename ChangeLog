@@ -1,3 +1,18 @@
+2018-02-15         [RELEASE] Release of shibboleth_auth 3.0.0 (Nicole Cordes)
+2018-02-14 ea0834e [TASK] Raise TYPO3 dependency to 8.7 (Nicole Cordes)
+2018-02-14 e3974f8 [BUGFIX] Prevent empty frontend user groups (Nicole Cordes)
+2018-02-14 c1ca99a [BUGFIX] Prevent null for database values (Nicole Cordes)
+2018-02-14 4751e42 [BUGFIX] Set correct pid for user record fetching (Nicole Cordes)
+2018-02-14 383c76a [BUGFIX] Remove eval required option in pi1/flexform.xml (Nicole Cordes)
+2018-02-14 aae28d0 [BUGFIX] Fix undefined class notifications (Nicole Cordes)
+2018-02-14 1ec7b83 [BUGFIX] Replace tx_sv_authbase with TYPO3\CMS\Sv\AbstractAuthenticationService (Nicole Cordes)
+2018-02-14 7884c20 [BUGFIX] Replace tslib_pibase with TYPO3\CMS\Frontend\Plugin\AbstractPlugin (Nicole Cordes)
+2018-02-14 09110f1 [BUGFIX] Move TCA configuration from ext_tables.php to Configuration/TCA (Nicole Cordes)
+2018-02-14 36032df [BUGFIX] Replace t3lib_utility_Http with TYPO3\CMS\Core\Utility\HttpUtility (Nicole Cordes)
+2018-02-14 3414a2f [BUGFIX] Replace t3lib_div with TYPO3\CMS\Core\Utility\GeneralUtility (Nicole Cordes)
+2018-02-14 5a8034b [BUGFIX] Replace t3lib_extMgm with TYPO3\CMS\Core\Utility\ExtensionManagementUtility (Nicole Cordes)
+2018-02-14 6ba66a7 [TASK] Fix coding style according to php-cs-fixer (Nicole Cordes)
+
 2.6.2:	Added option onlyAffiliationGroups: Manually added or deprecated group assignments will be removed if user misses according affiliation.
 2.6.1:	Fixed session timeout behaviour with showRefreshLoginPopup.
 2.6.0:  Added regex variable to settings to change affiliations before creating FE groups. Compatibility for 6.2.
